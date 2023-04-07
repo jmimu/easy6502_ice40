@@ -22,3 +22,4 @@ $0600 - $06ff  Program ROM
 
 VGA 13h default palette:
 https://commons.wikimedia.org/wiki/User:Psychonaut/ipalette.sh
+
