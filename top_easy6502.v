@@ -1,8 +1,15 @@
 `include "VGA/vga_render.v"
 `include "i2s.v"
 `include "misc/rams.v"
+`include "misc/power_on_reset.v"
+`include "verilog-65C02-fsm/cpu.v"
+`include "verilog-65C02-fsm/ab.v"
+`include "verilog-65C02-fsm/alu.v"
+`include "verilog-65C02-fsm/disas.v"
+`include "verilog-65C02-fsm/regfile.v"
 
-module rgb_blink (
+
+module top_easy6502 (
     // inputs
     input wire gpio_20, // 12 MHz clk
     // outputs
@@ -44,20 +51,27 @@ SB_PLL40_CORE #(
     .BYPASS(1'b0)
 );
 
+//power on reset
+wire reset;
+power_on_reset por(
+  .clk(CLK_25M),
+  .reset(reset)
+);
+
+
 // memory
-wire [10:0] waddr = 11'b0;
-wire [10:0] raddr = screen_read_en?screen_read_addr:11'b0;
-wire [7:0] wdata = 8'b0;
-wire write_en = 1'b0;
+wire [10:0] rwaddr = screen_read_en?screen_read_addr:cpu_address[10:0];
+wire [7:0] wdata;
+wire write_en;
 wire [7:0] rdata = screen_read_data;
 generic_ram #(.DATA_WIDTH(8),.ADDR_WIDTH(11),.IN_FILENAME("easy6502.mem"))
 ram_palettes_data(
     .rclk(CLK_25M),
     .wclk(CLK_25M),
     .write_en(write_en),
-    .waddr(waddr),
+    .waddr(rwaddr),
     .din(wdata),
-    .raddr(raddr),
+    .raddr(rwaddr),
     .dout(rdata));
 
 
@@ -67,7 +81,7 @@ wire [10:0] screen_read_addr;
 wire [7:0] screen_read_data;
 vga_render vga(
     .clk(CLK_25M),
-    .reset(1'b0),
+    .reset(reset),
     .hsync(gpio_2),
     .vsync(gpio_46),
     .rgb( { gpio_32, gpio_27, gpio_26, gpio_25, gpio_23,
@@ -77,6 +91,27 @@ vga_render vga(
     .screen_read_addr(screen_read_addr),
     .screen_read_data(screen_read_data)
 );
+
+// slow cpu_clk
+reg [10:0] cpu_clk_cnt = 0;
+always @( posedge CLK_25M )
+    cpu_clk_cnt <= cpu_clk_cnt + 1;
+wire cpu_clk = cpu_clk_cnt[10];
+
+wire cpu_sync;
+wire [15:0] cpu_address;
+cpu cpu1( 
+    .clk(cpu_clk),                          // CPU clock
+    .RST(reset),                          // RST signal
+    .AB(cpu_address),                   // address bus (combinatorial) 
+    .sync(cpu_sync),                        // start of new instruction
+    .DI(rdata),                     // data bus input
+    .DO(wdata),                // data bus output 
+    .WE(write_en),                          // write enable
+    .IRQ(1'b0),                          // interrupt request
+    .NMI(1'b0),                          // non-maskable interrupt request
+    .RDY(!screen_read_en),                          // Ready signal. Pauses CPU when RDY=0
+    .debug(1'b0) );                      // debug for simulation
 
 
 endmodule

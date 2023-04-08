@@ -78,7 +78,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
   end
 
   assign screen_read_addr = {pixy, pixx} + 10'h200;
-  assign screen_read_en = 1'b1;
+  assign screen_read_en = ~outpix;
   //wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
   wire [7:0] palettes_addr = screen_read_data;
   
