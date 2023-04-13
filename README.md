@@ -12,7 +12,7 @@ Easy 6502
 =========
 https://skilldrick.github.io/easy6502/
 
-6502 CPU from https://github.com/Arlet/verilog-65C02-fsm.git
+6502 CPU from https://github.com/Arlet/verilog-6502.git
 
 Easy 6502 memory :
 $0000 - $00ff  Zero page

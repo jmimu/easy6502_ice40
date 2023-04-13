@@ -7,35 +7,7 @@
     parameter ADDR_WIDTH = 10, //nb records <= 2**ADDR_WIDTH
     parameter IN_FILENAME = "?"
 //----------------------------------------------------------------------
-)
-    (rclk, wclk, we, waddr, din, raddr, dout);    
-    input rclk;
-    input wclk;
-    input we;
-    input [ADDR_WIDTH-1:0] waddr;
-    input [DATA_WIDTH-1:0] din;
-    input [ADDR_WIDTH-1:0] raddr;
-    output reg [DATA_WIDTH-1:0] dout;
-    
-    reg [DATA_WIDTH-1:0] ram_block [(2**ADDR_WIDTH)-1:0];
-
-    //test if IN_FILENAME not empty
-    if (IN_FILENAME!="?")
-        initial $readmemh (IN_FILENAME, ram_block);
-    
-    always @(posedge rclk)
-    begin
-        dout <= ram_block[raddr];
-    end
-    always @(posedge wclk)
-    begin
-        if (we) //write enable
-            ram_block[waddr] <= din;
-    end
-    //assign dout = ram_block[raddr];
-    
-endmodule*/
-
+)*/
 module generic_ram (din, write_en, waddr, wclk, raddr, rclk, dout);
   parameter ADDR_WIDTH = 9;
   parameter DATA_WIDTH = 8;

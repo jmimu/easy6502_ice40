@@ -2,18 +2,15 @@
 `include "i2s.v"
 `include "misc/rams.v"
 `include "misc/power_on_reset.v"
-`include "verilog-65C02-fsm/cpu.v"
-`include "verilog-65C02-fsm/ab.v"
-`include "verilog-65C02-fsm/alu.v"
-`include "verilog-65C02-fsm/disas.v"
-`include "verilog-65C02-fsm/regfile.v"
+`include "verilog-6502/cpu.v"
+`include "verilog-6502/ALU.v"
+
 
 
 module top_easy6502 (
     // inputs
-`ifdef SIMUL
     input wire gpio_20, // 12 MHz clk
-`endif
+
     // outputs
     output wire gpio_23, //VGA colors
     output wire gpio_25,
@@ -106,20 +103,22 @@ always @( posedge CLK_25M )
     cpu_clk_cnt <= cpu_clk_cnt + 1;
 wire cpu_clk = cpu_clk_cnt[10];
 
+reg [1:0] cpu_ready = 2'b00; // 1/4 of the time for ram sync
+always @( posedge CLK_25M )
+    cpu_ready <= cpu_ready + 1;
+
 wire cpu_sync;
 wire [15:0] cpu_address;
 cpu cpu1( 
     .clk(cpu_clk),                          // CPU clock
-    .RST(reset),                          // RST signal
+    .reset(reset),                          // RST signal
     .AB(cpu_address),                   // address bus (combinatorial) 
-    .sync(cpu_sync),                        // start of new instruction
     .DI(rdata),                     // data bus input
     .DO(wdata),                // data bus output 
     .WE(write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request
     .NMI(1'b0),                          // non-maskable interrupt request
-    .RDY(!screen_read_en),                          // Ready signal. Pauses CPU when RDY=0
-    .debug(1'b0) );                      // debug for simulation
-
+    .RDY( 1'b1 )      // TODO use cpu_ready ??                    // Ready signal. Pauses CPU when RDY=0
+ );
 
 endmodule
