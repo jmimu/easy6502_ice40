@@ -1,4 +1,4 @@
-`include "VGA/vga_render.v"
+`include "vga_render.v"
 `include "i2s.v"
 `include "misc/rams.v"
 `include "misc/power_on_reset.v"
@@ -11,7 +11,9 @@
 
 module top_easy6502 (
     // inputs
+`ifdef SIMUL
     input wire gpio_20, // 12 MHz clk
+`endif
     // outputs
     output wire gpio_23, //VGA colors
     output wire gpio_25,
@@ -31,10 +33,15 @@ module top_easy6502 (
     output wire gpio_46, //vga sync
     output wire gpio_2, //vga sync
 
+`ifdef SIMUL
+	input wire CLK_25M
+`endif
 
 );
 
 wire CLK_12M = gpio_20;
+
+`ifndef SIMUL
 wire CLK_25M;
 // 25 MHz
 SB_PLL40_CORE #(
@@ -50,6 +57,7 @@ SB_PLL40_CORE #(
     .RESETB(1'b1),
     .BYPASS(1'b0)
 );
+`endif
 
 //power on reset
 wire reset;
@@ -65,7 +73,7 @@ wire [7:0] wdata;
 wire write_en;
 wire [7:0] rdata = screen_read_data;
 generic_ram #(.DATA_WIDTH(8),.ADDR_WIDTH(11),.IN_FILENAME("easy6502.mem"))
-ram_palettes_data(
+ram_system(
     .rclk(CLK_25M),
     .wclk(CLK_25M),
     .write_en(write_en),

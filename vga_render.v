@@ -4,11 +4,14 @@
 A simple test pattern using the hvsync_generator module.
 */
 
-module vga_pattern(clk, reset, hsync, vsync, rgb);
+module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_addr, screen_read_data);
 
   input clk, reset;
   output hsync, vsync;
   output [14:0] rgb;
+  output screen_read_en;
+  output [10:0] screen_read_addr;
+  input [7:0] screen_read_data;
   wire display_on;
   wire [9:0] hpos;
   wire [9:0] vpos;
@@ -73,10 +76,14 @@ module vga_pattern(clk, reset, hsync, vsync, rgb);
         suby <= suby + 5'b1;
     end
   end
- 
-  wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
+
+  assign screen_read_addr = {pixy, pixx} + 10'h200;
+  assign screen_read_en = ~outpix;
+  //wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
+  wire [7:0] palettes_addr = screen_read_data;
+  
   wire [23:0] rgb_out; // TODO: 15 bit palette
-  generic_ram #(.DATA_WIDTH(24),.ADDR_WIDTH(8),.IN_FILENAME("../palettes.mem"))
+  generic_ram #(.DATA_WIDTH(24),.ADDR_WIDTH(8),.IN_FILENAME("palettes.mem"))
   ram_palettes_data(
       .rclk(clk),
       .wclk(clk),
