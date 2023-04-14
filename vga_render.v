@@ -20,7 +20,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
 
   hvsync_generator hvsync_gen(
     .clk(clk),
-    .reset(1'b0),
+    .reset(reset),
     .hsync(hsync),
     .vsync(vsync),
     .display_on(display_on),
@@ -79,7 +79,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
 
   assign screen_read_addr = {pixy, pixx} + 10'h200;
   //assign screen_read_en = ~outpix;
-  reg screen_read_en = 1'b0; // TODO: read memory from time to time...
+  assign screen_read_en = display_on; // TODO: read all line once?
   
   //wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
   wire [7:0] palettes_addr = screen_read_data;

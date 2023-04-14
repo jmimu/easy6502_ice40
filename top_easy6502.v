@@ -73,7 +73,7 @@ generic_ram #(.DATA_WIDTH(8),.ADDR_WIDTH(11),.IN_FILENAME("easy6502.mem"))
 ram_system(
     .rclk(CLK_25M),
     .wclk(CLK_25M),
-    .write_en(write_en),
+    .write_en(write_en && (!screen_read_en)),
     .waddr(rwaddr),
     .din(wdata),
     .raddr(rwaddr),
@@ -97,6 +97,13 @@ vga_render vga(
     .screen_read_data(screen_read_data)
 );
 
+// TODO: incorrect. make sure cpu see correct data after vga give ram back
+reg cpu_ready = 1'b0;
+always @(posedge CLK_25M)
+begin
+    cpu_ready <= !screen_read_en;
+end
+
 wire cpu_sync;
 wire [15:0] cpu_address;
 cpu cpu1( 
@@ -108,7 +115,7 @@ cpu cpu1(
     .WE(write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request
     .NMI(1'b0),                          // non-maskable interrupt request
-    .RDY( 1'b1 )      // TODO pause when render needs mem             // Ready signal. Pauses CPU when RDY=0
+    .RDY( cpu_ready && (!screen_read_en) )      // Ready signal. Pauses CPU when RDY=0
  );
 
 endmodule
