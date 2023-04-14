@@ -97,20 +97,10 @@ vga_render vga(
     .screen_read_data(screen_read_data)
 );
 
-// slow cpu_clk
-reg [10:0] cpu_clk_cnt = 0;
-always @( posedge CLK_25M )
-    cpu_clk_cnt <= cpu_clk_cnt + 1;
-wire cpu_clk = cpu_clk_cnt[10];
-
-reg [1:0] cpu_ready = 2'b00; // 1/4 of the time for ram sync
-always @( posedge CLK_25M )
-    cpu_ready <= cpu_ready + 1;
-
 wire cpu_sync;
 wire [15:0] cpu_address;
 cpu cpu1( 
-    .clk(cpu_clk),                          // CPU clock
+    .clk(CLK_25M),                          // CPU clock
     .reset(reset),                          // RST signal
     .AB(cpu_address),                   // address bus (combinatorial) 
     .DI(rdata),                     // data bus input
@@ -118,7 +108,7 @@ cpu cpu1(
     .WE(write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request
     .NMI(1'b0),                          // non-maskable interrupt request
-    .RDY( 1'b1 )      // TODO use cpu_ready ??                    // Ready signal. Pauses CPU when RDY=0
+    .RDY( 1'b1 )      // TODO pause when render needs mem             // Ready signal. Pauses CPU when RDY=0
  );
 
 endmodule
