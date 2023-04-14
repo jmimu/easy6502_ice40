@@ -39,6 +39,32 @@ JMP $0600
 a9 03 8d 21 02 a9 05 8d 22 02 a9 07 8d 23 02 4c 00 06
 draws 3 pixels 3, 5, 8 and loops
 
+-------------------
+
+LDA #$00
+LDX #$00
+LDY #$00
+
+loop:
+ADC #$01
+STA $0222
+slow1:
+slow2:
+INY
+CPY #$00
+BNE slow2
+INY ; dephase
+INY
+INY
+INX
+CPX #$00
+BNE slow1
+INX  ; dephase
+INX
+JMP loop
+
+0600: a9 00 a2 00 a0 00 69 01 8d 22 02 c8 c0 00 d0 fb 
+0610: c8 c8 c8 e8 e0 00 d0 f3 e8 e8 4c 06 06
 
 Address  Hexdump   Dissassembly
 -------------------------------
@@ -50,7 +76,12 @@ $0608    8d 22 02  STA $0222
 $060b    c8        INY 
 $060c    c0 00     CPY #$00
 $060e    d0 fb     BNE $060b
-$0610    e8        INX 
-$0611    e0 00     CPX #$00
-$0613    d0 f6     BNE $060b
-$0615    4c 06 06  JMP $0606
+$0610    c8        INY 
+$0611    c8        INY 
+$0612    c8        INY 
+$0613    e8        INX 
+$0614    e0 00     CPX #$00
+$0616    d0 f3     BNE $060b
+$0618    e8        INX 
+$0619    e8        INX 
+$061a    4c 06 06  JMP $0606

@@ -41,45 +41,59 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
   reg [3:0] subx = 4'b0;
   reg [3:0] suby = 4'b0;
   
-  reg outpix = 0;
+  reg in_border_h = 0;
   always @(posedge clk)
   begin
-    if (hpos==10'd80) begin
-      outpix <= 0;
-    end else if (hpos==10'd560) begin
-      outpix <= 1;
+    if (reset) begin
+      in_border_h <= 1'b1;
+    end else begin
+      if (hpos==10'd80-1) begin //-1 for delay
+        in_border_h <= 1'b0;
+      end else if (hpos==10'd560-1) begin //-1 for delay
+        in_border_h <= 1'b1;
+      end
     end
   end
   
   always @(posedge clk)
   begin
-    if (hpos==10'd80) begin
+    if (reset) begin
       pixx <= 5'b0;
       subx <= 5'b0;
-    end else if (subx==4'd14) begin
-      pixx <= pixx + 5'b1;
-      subx <= 5'b0;
-    end else
-      subx <= subx + 5'b1;
+    end else begin
+      if (hpos==10'd80) begin
+        pixx <= 5'b0;
+        subx <= 5'b0;
+      end else if (subx==4'd14) begin
+        pixx <= pixx + 5'b1;
+        subx <= 5'b0;
+      end else
+        subx <= subx + 5'b1;
+    end
   end
   
   always @(posedge clk)
   begin
-    if (hmaxxed) begin
-      if (vmaxxed) begin
-        pixy <= 5'b0;
-        suby <= 5'b0;
-      end else if (suby==4'd14) begin
-        pixy <= pixy + 5'b1;
-        suby <= 5'b0;
-      end else
-        suby <= suby + 5'b1;
+    if (reset) begin
+      pixy <= 5'b0;
+      suby <= 5'b0;
+    end else begin
+      if (hmaxxed) begin
+        if (vmaxxed) begin
+          pixy <= 5'b0;
+          suby <= 5'b0;
+        end else if (suby==4'd14) begin
+          pixy <= pixy + 5'b1;
+          suby <= 5'b0;
+        end else
+          suby <= suby + 5'b1;
+      end
     end
   end
 
   assign screen_read_addr = {pixy, pixx} + 10'h200;
-  //assign screen_read_en = ~outpix;
-  assign screen_read_en = display_on; // TODO: read all line once?
+
+  assign screen_read_en = display_on && (~in_border_h); // TODO: read all line once?
   
   //wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
   wire [7:0] palettes_addr = screen_read_data;
@@ -95,10 +109,6 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
       .raddr(palettes_addr),
       .dout(rgb_out));
 
-  assign rgb =  outpix ? 15'b0 : { rgb_out[23:19], rgb_out[15:11], rgb_out[7:3] }; // TODO: delay outpix
+  assign rgb =  (in_border_h||(!display_on)) ? 15'b0 : { rgb_out[23:19], rgb_out[15:11], rgb_out[7:3] }; // TODO: delay outpix
 
-  /*wire borderpixx = (pixx==0)||(pixx==31);
-  wire borderpixy = (pixy==0)||(pixy==31);
-  
-  assign rgb = { outpix?5'b0:{borderpixx,4'b0}, outpix?5'b0:{borderpixy,4'b0}, 5'b0};*/
 endmodule
