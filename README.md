@@ -28,14 +28,29 @@ https://commons.wikimedia.org/wiki/User:Psychonaut/ipalette.sh
 Program
 =======
 
-LDA #$01
-STA $0200
+LDA #$03
+STA $0221
 LDA #$05
-STA $0201
-LDA #$08
-STA $0202
+STA $0222
+LDA #$07
+STA $0223
 JMP $0600
+00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11
+a9 03 8d 21 02 a9 05 8d 22 02 a9 07 8d 23 02 4c 00 06
+draws 3 pixels 3, 5, 8 and loops
 
-a9 01 8d 00 02 a9 05 8d 01 02 a9 08 8d 02 02 4c 00 06
 
-draws 3 pixels 1, 5, 8 and loops
+Address  Hexdump   Dissassembly
+-------------------------------
+$0600    a9 00     LDA #$00
+$0602    a2 00     LDX #$00
+$0604    a0 00     LDY #$00
+$0606    69 01     ADC #$01
+$0608    8d 22 02  STA $0222
+$060b    c8        INY 
+$060c    c0 00     CPY #$00
+$060e    d0 fb     BNE $060b
+$0610    e8        INX 
+$0611    e0 00     CPX #$00
+$0613    d0 f6     BNE $060b
+$0615    4c 06 06  JMP $0606

@@ -17,11 +17,7 @@ module generic_ram (din, write_en, waddr, wclk, raddr, rclk, dout);
   input [DATA_WIDTH-1:0] din;
   input write_en, wclk, rclk;
   output reg [DATA_WIDTH-1:0] dout;
-`ifdef SIMUL
   reg [DATA_WIDTH-1:0] mem [0:(1<<ADDR_WIDTH)-1];
-`else
-  reg [DATA_WIDTH-1:0] mem [(1<<ADDR_WIDTH)-1:0];
-`endif
   if (IN_FILENAME!="?")
         initial $readmemh (IN_FILENAME, mem);
   always @(posedge wclk) // Write memory.

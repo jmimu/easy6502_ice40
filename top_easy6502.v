@@ -30,7 +30,7 @@ module top_easy6502 (
     output wire gpio_46, //vga sync
     output wire gpio_2, //vga sync
 
-`ifdef SIMUL
+`ifdef SIM
 	input wire CLK_25M
 `endif
 
@@ -38,7 +38,7 @@ module top_easy6502 (
 
 wire CLK_12M = gpio_20;
 
-`ifndef SIMUL
+`ifndef SIM
 wire CLK_25M;
 // 25 MHz
 SB_PLL40_CORE #(
@@ -65,7 +65,7 @@ power_on_reset por(
 
 
 // memory
-wire [10:0] rwaddr = screen_read_en?screen_read_addr:cpu_address[10:0];
+wire [10:0] rwaddr = cpu_ready?cpu_address[10:0]:screen_read_addr;
 wire [7:0] wdata;
 wire write_en;
 wire [7:0] rdata = screen_read_data;
@@ -73,7 +73,7 @@ generic_ram #(.DATA_WIDTH(8),.ADDR_WIDTH(11),.IN_FILENAME("easy6502.mem"))
 ram_system(
     .rclk(CLK_25M),
     .wclk(CLK_25M),
-    .write_en(write_en && (!screen_read_en)),
+    .write_en(write_en && cpu_ready ),
     .waddr(rwaddr),
     .din(wdata),
     .raddr(rwaddr),
@@ -97,11 +97,18 @@ vga_render vga(
     .screen_read_data(screen_read_data)
 );
 
-// TODO: incorrect. make sure cpu see correct data after vga give ram back
+
 reg cpu_ready = 1'b0;
 always @(posedge CLK_25M)
 begin
-    cpu_ready <= !screen_read_en;
+    if (screen_read_en)
+    begin
+        if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
+            cpu_ready <= 1'b0;
+    end else begin
+        if (!cpu_ready)
+            cpu_ready <= 1'b1;
+    end
 end
 
 wire cpu_sync;
@@ -115,7 +122,8 @@ cpu cpu1(
     .WE(write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request
     .NMI(1'b0),                          // non-maskable interrupt request
-    .RDY( cpu_ready && (!screen_read_en) )      // Ready signal. Pauses CPU when RDY=0
+    .RDY( cpu_ready ),      // Ready signal. Pauses CPU when RDY=0
+    .SYNC(cpu_sync)            // is starting a new instruction
  );
 
 endmodule
