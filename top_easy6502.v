@@ -106,7 +106,7 @@ begin
         if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
             cpu_ready <= 1'b0;
     end else begin
-        if (!cpu_ready)
+        if ((!reset) && (!cpu_ready))
             cpu_ready <= 1'b1;
     end
 end
