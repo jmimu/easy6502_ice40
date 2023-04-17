@@ -38,12 +38,16 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
   reg [3:0] suby = 4'b0;
   
   reg in_border_h = 0;
+  reg ask_for_ram = 0;
   always @(posedge clk)
   begin
     if (reset) begin
       in_border_h <= 1'b1;
+      ask_for_ram <= 1'b0;
     end else begin
-      if (hpos==10'd96) begin
+      if (hpos==10'd82) begin
+        ask_for_ram <= !in_border_v; //ask for ram one pixel before drawing to let CPU finish current instruction
+      end else if (hpos==10'd96) begin
         in_border_h <= 1'b0;
       end else if (hpos==10'd544) begin
         in_border_h <= 1'b1;
@@ -103,7 +107,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
 
   assign screen_read_addr = {pixy, pixx} + 10'h200;
 
-  assign screen_read_en = display_on && (~in_border_h) && (~in_border_v); // TODO: read all line once?
+  assign screen_read_en = ask_for_ram; // TODO: read all line once?
   
   //wire [7:0] palettes_addr = {2'b0, pixy[2:0], pixx};
   wire [7:0] palettes_addr = screen_read_data;
