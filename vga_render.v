@@ -51,6 +51,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
         in_border_h <= 1'b0;
       end else if (hpos==10'd544) begin
         in_border_h <= 1'b1;
+        ask_for_ram <= 1'b0;
       end
     end
   end
