@@ -28,6 +28,11 @@ https://commons.wikimedia.org/wiki/User:Psychonaut/ipalette.sh
 Program
 =======
 
+simplest :
+a9 01 8d 00 02
+
+
+
 LDA #$03
 STA $0221
 LDA #$05
