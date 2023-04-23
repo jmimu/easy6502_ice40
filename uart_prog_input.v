@@ -37,18 +37,21 @@ uart_rx uart_rx1(
   .data_strobe(rx_data_strobe)
 );
 
-reg [19:0] wait_for_next_byte; // when 8, stop ask_for_ram, reset cpu
+reg [15:0] wait_for_next_byte; // when 8, stop ask_for_ram, reset cpu
 
 always @(posedge clk_ram)
   begin
     if (reset) begin
+      wait_for_next_byte <= 0;
       waddr <= 16'h05ff;
       wdata <= 8'b0;
       write_en  <= 1'b0;
       ask_for_ram <= 1'b0;
       end_of_data <= 1'b0;
     end else begin
-      if (rx_data_strobe) begin
+      if (serial_rxd == 1'b0) begin
+        ask_for_ram <= 1'b1; //ask ram on start bit
+      end else  if (rx_data_strobe) begin
         ask_for_ram <= 1'b1;
         end_of_data <= 1'b0;
         wait_for_next_byte <= -1;
@@ -59,10 +62,10 @@ always @(posedge clk_ram)
         if (wait_for_next_byte != 0) begin
           wait_for_next_byte <= wait_for_next_byte - 1;
           write_en  <= 1'b0;
-          if (wait_for_next_byte == 20'd80) begin //transmission is stopped, reset cpu
+          if (wait_for_next_byte == 15'd16) begin //transmission is stopped, reset cpu
             ask_for_ram <= 1'b0;
             end_of_data <= 1'b1;
-          end else if (wait_for_next_byte == 20'd1) begin //end of reset cpu
+          end else if (wait_for_next_byte == 15'd1) begin //end of reset cpu
             end_of_data <= 1'b0;
             waddr <= 16'h05ff; //restart writing address
           end

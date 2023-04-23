@@ -72,8 +72,8 @@ power_on_reset por(
 // memory
 wire [10:0] ram_waddr = cpu_ready?cpu_address[10:0]:uart_waddr[10:0];
 wire [10:0] ram_raddr = cpu_ready?cpu_address[10:0]:screen_read_addr;
-wire [7:0] ram_wdata = cpu_wdata;
-wire ram_write_en = cpu_write_en && cpu_ready;
+wire [7:0] ram_wdata = cpu_ready?cpu_wdata:uart_wdata;
+wire ram_write_en = (cpu_write_en && cpu_ready) || uart_write_en;
 wire [7:0] ram_rdata = screen_read_data;
 assign cpu_rdata = screen_read_data;
 
@@ -143,6 +143,7 @@ wire [15:0] uart_waddr;
 wire [7:0] uart_wdata;
 wire uart_ask_for_ram;
 wire uart_end_of_data;
+wire uart_write_en;
 
 uart_prog_input uart_prog_input1(
     .clk_ram(CLK_25M),
@@ -150,6 +151,7 @@ uart_prog_input uart_prog_input1(
     .serial_rxd(serial_rxd),
     .waddr(uart_waddr),
     .wdata(uart_wdata),
+    .write_en(uart_write_en),
     .ask_for_ram(uart_ask_for_ram),
     .end_of_data(uart_end_of_data)
 );

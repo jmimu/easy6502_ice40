@@ -29,8 +29,10 @@ Program
 =======
 
 simplest :
-a9 01 8d 00 02
-
+LDA #$01
+STA $0200
+JMP $0600
+a9 01 8d 00 02 4c 00 06
 
 
 LDA #$03

@@ -1,4 +1,4 @@
-`timescale 1ns/1ps
+`timescale 1ns/10ps
 
 `include "top_easy6502.v"
 
@@ -7,6 +7,7 @@ module tb ();
 	localparam DURATION = 100000000;
 
 	reg clk25, clk12;
+	reg serial_rxd;
 	wire gpio_23; //VGA colors
 	wire gpio_25;
 	wire gpio_26;
@@ -28,6 +29,113 @@ module tb ();
 	initial begin
 		clk25 = 1'b0;
 		clk12 = 1'b0;
+		serial_rxd = 1'b1;
+
+		//uart message: a9 01 8d 00 02 4c 00 06 (5700 bauds = 17361 ns)
+		// a9
+		#100000 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 01
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 8d
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 00
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 02
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 4c
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 00
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		// 06
+		#17361 serial_rxd = 1'b0; //start bit
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b0;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
+		#17361 serial_rxd = 1'b1;
 	end
 
 	always begin
@@ -39,6 +147,7 @@ module tb ();
 
 	top_easy6502 uut(
 		.gpio_20(clk12),
+		.serial_rxd(serial_rxd),
 		
 		.gpio_23(gpio_23), //segments
 		.gpio_25(gpio_25),

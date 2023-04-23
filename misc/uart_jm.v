@@ -1,6 +1,7 @@
-//generates 57600 from 16MHz or 12MHz master clock
+//generates 57600 from master clock
 // 16e6/(8192/59) =  115234.37500
 // 12e6/(8192/79) =  115722.65625
+// 25e6/(8192/38) =  115966.79
 module uart_clk(mclk, reset, baud_x1, baud_x4);
 
    input        mclk, reset;
@@ -20,7 +21,7 @@ module uart_clk(mclk, reset, baud_x1, baud_x4);
         prev_x4 <= 0;
      end
      else begin
-        cnt <= cnt + 79;
+        cnt <= cnt + 38;
         prev_x1 <= cnt[13];
         prev_x4 <= cnt[11];
      end
@@ -37,7 +38,7 @@ endmodule
 module uart_tx(
 	input mclk,
 	input reset,
-	input baud_x1_pulse,
+	input baud_x1,
 	output serial,
 	output reg ready,
 	input [7:0] data,
@@ -78,11 +79,11 @@ module uart_tx(
      end
      else if (data_strobe) begin
         shiftreg <= {
-		1'b1, // stop bit
-		data,
-		1'b0  // start bit (inverted)
-	};
-	ready <= 0;
+            1'b1, // stop bit
+            data,
+            1'b0  // start bit (inverted)
+         };
+         ready <= 0;
      end
      else if (baud_x1) begin
         if (shiftreg == 0)
@@ -164,66 +165,6 @@ module uart_rx(mclk, reset, baud_x4,
         data_strobe <= 0;
      end
 
-endmodule
-
-
-/*
- * Output UART with a block RAM FIFO queue.
- *
- * Add bytes to the queue and they will be printed when the line is idle.
- */
-module uart_tx_fifo(
-	input clk,
-	input reset,
-	input baud_x1,
-	input [7:0] data,
-	input data_strobe,
-	output serial
-);
-	parameter NUM = 32;
-
-	wire uart_txd_ready; // high the UART is ready to take a new byte
-	reg uart_txd_strobe; // pulse when we have a new byte to transmit
-	reg [7:0] uart_txd;
-
-	uart_tx txd(
-		.mclk(clk),
-		.reset(reset),
-		.baud_x1(baud_x1),
-		.serial(serial),
-		.ready(uart_txd_ready),
-		.data(uart_txd),
-		.data_strobe(uart_txd_strobe)
-	);
-
-	wire fifo_available;
-	wire fifo_read_strobe;
-
-	fifo #(.NUM(NUM), .WIDTH(8)) buffer(
-		.clk(clk),
-		.reset(reset),
-		.write_data(data),
-		.write_strobe(data_strobe),
-		.data_available(fifo_available),
-		.read_data(uart_txd),
-		.read_strobe(fifo_read_strobe)
-	);
-
-	// drain the fifo into the serial port
-	always @(posedge clk)
-	begin
-		uart_txd_strobe <= 0;
-		fifo_read_strobe <= 0;
-
-		if (fifo_available
-		&&  uart_txd_ready
-		&& !data_strobe // avoid dual port RAM if possible
-		&& !uart_txd_strobe // don't TX twice on one byte
-		) begin
-			fifo_read_strobe <= 1;
-			uart_txd_strobe <= 1;
-		end
-	end
 endmodule
 
 
