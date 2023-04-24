@@ -74,8 +74,8 @@ wire [10:0] ram_waddr = cpu_ready?cpu_address[10:0]:uart_waddr[10:0];
 wire [10:0] ram_raddr = cpu_ready?cpu_address[10:0]:screen_read_addr;
 wire [7:0] ram_wdata = cpu_ready?cpu_wdata:uart_wdata;
 wire ram_write_en = (cpu_write_en && cpu_ready) || uart_write_en;
-wire [7:0] ram_rdata = screen_read_data;
-assign cpu_rdata = screen_read_data;
+wire [7:0] ram_rdata;// = screen_read_data;
+//assign cpu_rdata = screen_read_data;
 
 generic_ram #(.DATA_WIDTH(8),.ADDR_WIDTH(11),.IN_FILENAME("easy6502.mem"))
 ram_system(
@@ -91,7 +91,7 @@ ram_system(
 // display
 wire screen_read_en;
 wire [10:0] screen_read_addr;
-wire [7:0] screen_read_data;
+//wire [7:0] screen_read_data;
 vga_render vga(
     .clk(CLK_25M),
     .reset(reset),
@@ -102,7 +102,7 @@ vga_render vga(
             gpio_47, gpio_28, gpio_38, gpio_42, gpio_36 } ),
     .screen_read_en(screen_read_en),
     .screen_read_addr(screen_read_addr),
-    .screen_read_data(screen_read_data)
+    .screen_read_data(ram_rdata)
 );
 
 
@@ -123,13 +123,13 @@ wire cpu_sync;
 wire [15:0] cpu_address;
 wire cpu_write_en;
 wire [7:0] cpu_wdata;
-wire [7:0] cpu_rdata;
+//wire [7:0] cpu_rdata;
 wire cpu_reset = reset | uart_end_of_data;
 cpu cpu1( 
     .clk(CLK_25M),                          // CPU clock
     .reset(cpu_reset),                          // RST signal
     .AB(cpu_address),                   // address bus (combinatorial) 
-    .DI(cpu_rdata),                     // data bus input
+    .DI(ram_rdata),                     // data bus input
     .DO(cpu_wdata),                // data bus output 
     .WE(cpu_write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request

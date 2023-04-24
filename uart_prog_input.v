@@ -62,7 +62,7 @@ always @(posedge clk_ram)
         if (wait_for_next_byte != 0) begin
           wait_for_next_byte <= wait_for_next_byte - 1;
           write_en  <= 1'b0;
-          if (wait_for_next_byte == 15'd16) begin //transmission is stopped, reset cpu
+          if (wait_for_next_byte == 15'd160) begin //transmission is stopped, reset cpu => has to reset when cpu is not halted by screen, and should stop reset when not halted by screen too. TODO: improve
             ask_for_ram <= 1'b0;
             end_of_data <= 1'b1;
           end else if (wait_for_next_byte == 15'd1) begin //end of reset cpu
