@@ -13,21 +13,25 @@ module top_easy6502 (
     input wire serial_rxd,
 
     // outputs
-    output wire gpio_23, //VGA colors
-    output wire gpio_25,
-    output wire gpio_26,
+    //VGA colors
+    output wire gpio_32, //R
     output wire gpio_27,
-    output wire gpio_32,
-    output wire gpio_35,
-    output wire gpio_31,
-    output wire gpio_37,
-    output wire gpio_34,
+    output wire gpio_26,
+    output wire gpio_25,
+    output wire gpio_23,
+
+    output wire gpio_36, //G
     output wire gpio_43,
-    output wire gpio_36,
-    output wire gpio_42,
-    output wire gpio_38,
+    output wire gpio_34,
+    output wire gpio_37,
+    output wire gpio_31,
+
+    output wire gpio_21, //B
+    output wire gpio_12,
     output wire gpio_28,
-    output wire gpio_47,
+    output wire gpio_38,
+    output wire gpio_42,
+
     output wire gpio_46, //vga sync
     output wire gpio_2, //vga sync
 
@@ -98,14 +102,15 @@ vga_render vga(
     .hsync(gpio_2),
     .vsync(gpio_46),
     .rgb( { gpio_32, gpio_27, gpio_26, gpio_25, gpio_23,
-            gpio_43, gpio_34, gpio_37, gpio_31, gpio_35,
-            gpio_47, gpio_28, gpio_38, gpio_42, gpio_36 } ),
+            gpio_36, gpio_43, gpio_34, gpio_37, gpio_31,
+            gpio_21, gpio_12, gpio_28, gpio_38, gpio_42 } ),
     .screen_read_en(screen_read_en),
     .screen_read_addr(screen_read_addr),
     .screen_read_data(ram_rdata)
 );
 
-
+// TODO: still a sync problem...
+// split cpu halt and cpu memory driving to restore ram 1 clock before stopping halt?
 reg cpu_ready = 1'b0;
 always @(posedge CLK_25M)
 begin
