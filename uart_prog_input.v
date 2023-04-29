@@ -1,10 +1,11 @@
 `include "misc/uart_jm.v"
+`include "misc/val2freq.v"
 
 /*
 Stop CPU when recieving data, update prog bytes and restart CPU after end of data
 */
 
-module uart_prog_input(clk_ram, reset, serial_rxd, waddr, wdata, write_en, ask_for_ram, end_of_data);
+module uart_prog_input(clk_ram, reset, serial_rxd, waddr, wdata, write_en, ask_for_ram, end_of_data, debug_pin);
 
 input clk_ram;
 input reset;
@@ -14,6 +15,7 @@ output reg [7:0] wdata;
 output reg write_en;
 output reg ask_for_ram; //will suspend cpu
 output reg end_of_data; //will reboot cpu (7 cycles, ask_for_ram will be low)
+output debug_pin;
 
 wire baud_x1;
 wire baud_x4;
@@ -35,6 +37,13 @@ uart_rx uart_rx1(
   .serial(serial_rxd),
   .data(rx_data),
   .data_strobe(rx_data_strobe)
+);
+
+val2freq val2freq1(
+  .clk25M(clk_ram),
+  .reset(reset),
+  .val(rx_data),
+  .freq_out(debug_pin)
 );
 
 reg [15:0] wait_for_next_byte; // when 8, stop ask_for_ram, reset cpu

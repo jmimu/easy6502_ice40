@@ -6,7 +6,6 @@
 `include "verilog-6502/cpu.v"
 `include "verilog-6502/ALU.v"
 
-
 module top_easy6502 (
     // inputs
     input wire gpio_20, // 12 MHz clk
@@ -163,11 +162,13 @@ uart_prog_input uart_prog_input1(
     .wdata(uart_wdata),
     .write_en(uart_write_en),
     .ask_for_ram(uart_ask_for_ram),
-    .end_of_data(uart_end_of_data)
+    .end_of_data(uart_end_of_data),
+    .debug_pin(led_blue)
 );
+
 
 assign led_green = ~uart_ask_for_ram;
 assign led_red = ~uart_end_of_data;
-assign led_blue = 1'b1;
+//assign led_blue = 1'b1;
 
 endmodule
