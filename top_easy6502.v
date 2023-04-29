@@ -114,14 +114,19 @@ vga_render vga(
 reg cpu_ready = 1'b0;
 always @(posedge CLK_25M)
 begin
-    if (screen_read_en || uart_ask_for_ram)
-    begin
-        if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
-            cpu_ready <= 1'b0;
+    if (cpu_reset) begin
+        cpu_ready <= 1'b0;
     end else begin
-        if ((!reset) && (!cpu_ready))
-            cpu_ready <= 1'b1;
+        if (screen_read_en || uart_ask_for_ram)
+        begin
+            if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
+                cpu_ready <= 1'b0;
+        end else begin
+            if (!cpu_ready)
+                cpu_ready <= 1'b1;
+        end
     end
+
 end
 
 wire cpu_sync;
@@ -129,7 +134,7 @@ wire [15:0] cpu_address;
 wire cpu_write_en;
 wire [7:0] cpu_wdata;
 //wire [7:0] cpu_rdata;
-wire cpu_reset = reset | uart_end_of_data;
+wire cpu_reset = reset | uart_ask_for_ram | uart_end_of_data;
 cpu cpu1( 
     .clk(CLK_25M),                          // CPU clock
     .reset(cpu_reset),                          // RST signal
