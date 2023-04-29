@@ -10,6 +10,7 @@ https://upduino.readthedocs.io
 
 Easy 6502
 =========
+
 https://skilldrick.github.io/easy6502/
 
 6502 CPU from https://github.com/Arlet/verilog-6502.git
@@ -24,15 +25,33 @@ VGA 13h default palette:
 https://commons.wikimedia.org/wiki/User:Psychonaut/ipalette.sh
 
 
+6502
+====
+
+Internals of BRK/IRQ/NMI/RESET on a MOS 6502 https://www.pagetable.com/?p=410
+
+
+Startup
+=======
+
+SEI ;disable interrupts (set interrupt disable flag)
+CLD ;turn decimal mode off
+LDX #$FF
+TXS ;transfer X to stack pointer
+CLI ;clear interrupt disable
+JMP $0600
+
+78 d8 a2 ff 9a 58 4c 00 06
+
 
 Program
 =======
 
 simplest :
-LDA #$01
-STA $0200
+LDA #$02
+STA $0204
 JMP $0600
-a9 01 8d 00 02 4c 00 06
+a9 02 8d 04 02 4c 00 06
 
 
 LDA #$03
@@ -70,8 +89,7 @@ INX  ; dephase
 INX
 JMP loop
 
-0600: a9 00 a2 00 a0 00 69 01 8d 22 02 c8 c0 00 d0 fb 
-0610: c8 c8 c8 e8 e0 00 d0 f3 e8 e8 4c 06 06
+a9 00 a2 00 a0 00 69 01 8d 22 02 c8 c0 00 d0 fb c8 c8 c8 e8 e0 00 d0 f3 e8 e8 4c 06 06
 
 Address  Hexdump   Dissassembly
 -------------------------------
