@@ -4,7 +4,7 @@
 
 module tb ();
 
-	localparam DURATION = 100000000;
+	localparam DURATION = 30000000;
 
 	reg clk25, clk12;
 	reg serial_rxd;
@@ -34,118 +34,118 @@ module tb ();
 		clk12 = 1'b0;
 		serial_rxd = 1'b1;
 
-		//uart message: a9 01 8d 00 02 4c 00 06 (5700 bauds = 17361 ns)
+		//uart message: a9 01 8d 00 02 4c 00 06 (115200 bauds = 8681 ns)
 		// a9
-		#90000 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#100000 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 01
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 8d
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 00
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 02
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 4c
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 00
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 		// 06
-		#17361 serial_rxd = 1'b0; //start bit
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b0;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
-		#17361 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0; //start bit
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b0;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
+		#8681 serial_rxd = 1'b1;
 	end
 
 	always begin
-		#40 clk25 = !clk25;
+		#20 clk25 = !clk25;
 	end
 	always begin
-		#83 clk12 = !clk12;
+		#41 clk12 = !clk12;
 	end
 
 	top_easy6502 uut(

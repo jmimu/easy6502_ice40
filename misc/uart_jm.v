@@ -1,4 +1,4 @@
-//generates 57600 from master clock
+//generates 115200 from master clock
 // 16e6/(8192/59) =  115234.37500
 // 12e6/(8192/79) =  115722.65625
 // 25e6/(8192/38) =  115966.79
