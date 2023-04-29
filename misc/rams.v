@@ -29,4 +29,10 @@ module generic_ram (din, write_en, waddr, wclk, raddr, rclk, dout);
   begin
     dout <= mem[raddr]; // Using read address bus.
   end
+
+`ifdef SIM
+  wire [DATA_WIDTH-1:0] prog_start_0 = mem[16'h0600];
+  wire [DATA_WIDTH-1:0] prog_start_1 = mem[16'h0601];
+`endif
+
 endmodule
