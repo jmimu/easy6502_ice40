@@ -36,24 +36,24 @@ endmodule
  */
 
 module uart_tx(
-	input mclk,
-	input reset,
-	input baud_x1,
-	output serial,
-	output reg ready,
-	input [7:0] data,
-	input data_strobe
+        input mclk,
+        input reset,
+        input baud_x1,
+        output serial,
+        output reg ready,
+        input [7:0] data,
+        input data_strobe
 );
 
    /*
     * Left-to-right shift register.
-    * Loaded with data, start bit, and stop bit.
+    * Loaded with data, start bit, and 2 stop bits.
     *
     * The stop bit doubles as a flag to tell us whether data has been
     * loaded; we initialize the whole shift register to zero on reset,
     * and when the register goes zero again, it's ready for more data.
     */
-   reg [7+1+1:0]   shiftreg;
+   reg [7+1+2:0]   shiftreg;
 
    /*
     * Serial output register. This is like an extension of the
@@ -80,26 +80,82 @@ module uart_tx(
      else if (data_strobe) begin
         shiftreg <= {
             1'b1, // stop bit
+            1'b1, // stop bit
             data,
             1'b0  // start bit (inverted)
          };
          ready <= 0;
      end
      else if (baud_x1) begin
-        if (shiftreg == 0)
-	begin
-          /* Idle state is idle high, serial_r is inverted */
-          serial_r <= 0;
-	  ready <= 1;
-	end else
-          serial_r <= !shiftreg[0];
-  	// shift the output register down
-        shiftreg <= {1'b0, shiftreg[7+1+1:1]};
+         if (shiftreg == 0)
+         begin
+            /* Idle state is idle high, serial_r is inverted */
+            serial_r <= 0;
+            ready <= 1;
+         end else
+            serial_r <= !shiftreg[0];
+            // shift the output register down
+            shiftreg <= {1'b0, shiftreg[7+1+1:1]};
     end else
-    	ready <= (shiftreg == 0);
+            ready <= (shiftreg == 0);
 
 endmodule
 
+
+module uart_tx_uint32_bcd(
+        input mclk,
+        input reset,
+        input baud_x1,
+        output serial,
+        output reg ready,
+        input [31:0] data,
+        input data_strobe
+);
+
+   reg [2:0] digit_num;
+   reg [3:0] curr_digit;
+   reg [35:0] reg_data;
+   reg digit_strobe;
+   reg data_strobe_;
+   wire digit_ready;
+
+   uart_tx utx ( .mclk(mclk), .reset(reset),
+               .baud_x1(baud_x1),
+               .serial(serial),
+               .ready(digit_ready),
+               .data( {4'h3, curr_digit[3:0]}),
+               .data_strobe(digit_strobe) );
+   
+   always @(posedge mclk) begin
+      if (reset) begin
+         digit_num <= 3'b111;
+         digit_strobe <= 0;
+         ready <= 1;
+      end else begin
+         if (baud_x1) begin
+            if (ready && digit_ready && data_strobe && !data_strobe_) begin
+               ready <= 0;
+               digit_num <= 3'b111;
+               reg_data <= {data, 4'hb};
+               digit_strobe <= 1; // send digit
+            end else if (!ready && digit_ready) begin
+               if (digit_num==3'b000) begin
+                  digit_num <= 3'b111;
+                  ready <= 1;  // seq finished
+               end else begin
+                  digit_num <= digit_num - 1;
+                  digit_strobe <= 1; // send digit
+               end
+            end else begin
+               digit_strobe <= 0;
+            end
+         end 
+         curr_digit <= reg_data[(digit_num * 4) +:4];
+      end
+      data_strobe_ <= data_strobe;
+   end
+
+endmodule
 
 /*
  * Byte receiver, RS-232 8-N-1
