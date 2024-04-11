@@ -1,6 +1,7 @@
 
 `include "misc/power_on_reset.v"
-`include "misc/uart_jm.v"
+//`include "misc/uart_jm.v"
+`include "misc/uart_buffer.v"
 `include "misc/strobe2clk.v"
 `include "misc/bcd_digit.v"
 
@@ -31,9 +32,9 @@ power_on_reset por(
   .reset(reset)
 );
 
-// slow clock ~1s
+// slow clock ~2s
 reg [26:0] slowclk_cnt;
-wire slowclk = slowclk_cnt[22];
+wire slowclk = slowclk_cnt[23];
 always @(posedge clk)
 begin
   if (reset) begin
@@ -61,18 +62,17 @@ endgenerate
 
 
 // uart tx
-wire baud_x1, baud_x4;
+wire utx_strobe;
+assign utx_strobe = slowclk_cnt[14] & slowclk_cnt[17] & slowclk_cnt[24];
+uart_buffer utx(.clk(clk), .reset(reset),
+                .serial_tx(serial_txd),
+                .data( 8'd65 ), .data_strobe(utx_strobe)
+);
+
+/*wire baud_x1, baud_x4;
 wire utx_strobe, utx_ready;
 assign utx_strobe = slowclk;
-// strobe2clk(reset, mclk, sub_clk, in, out);
 uart_clk uclk (.mclk(clk), .reset(reset), .baud_x1(baud_x1), .baud_x4(baud_x4));
-/*uart_tx utx ( .mclk(clk), .reset(reset),
-            .baud_x1(baud_x1),
-            .serial(serial_txd),
-            .ready(utx_ready),
-            .data( {4'h3, mydata[3:0]}),
-            .data_strobe(utx_strobe)
-);*/
 
 uart_tx_uint32_bcd utx ( .mclk(clk), .reset(reset),
             .baud_x1(baud_x1),
@@ -80,6 +80,7 @@ uart_tx_uint32_bcd utx ( .mclk(clk), .reset(reset),
             .ready(utx_ready),
             .data( mydata),
             .data_strobe(utx_strobe) );
+*/
 
 // leds
 assign led_green = slowclk;
