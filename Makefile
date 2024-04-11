@@ -1,4 +1,5 @@
 TOP = top_easy6502
+TOP = top_uart
 
 top.bin: top.asc
 	icepack top.asc top.bin
