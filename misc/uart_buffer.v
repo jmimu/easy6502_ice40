@@ -22,7 +22,7 @@ module uart_buffer(clk, reset, serial_tx, baud_x1, data, data_strobe);
     ram_uart_tx(
         .rclk(clk),
         .wclk(clk),
-        .write_en(data_strobe),
+        .write_en(data_strobe_), // write one clock later to write at next address
         .waddr(w_char_num),
         .din(data),
         .raddr(r_char_num),
@@ -91,16 +91,16 @@ module send_uint32_bcd_tx_buf(
         output send_strobe
 );
 
-   reg [2:0] digit_num;
+   reg [4:0] digit_num;
    reg [7:0] curr_char;
-   reg [31:0] reg_data;
+   reg [79:0] reg_data;
    reg send_strobe;
    reg data_strobe_;
 
    // state machine
-   localparam st_ready = 2'b00;
-   localparam st_send =  2'b01;
-   localparam st_wait =  2'b10; // wait for next digit
+   localparam st_ready =  2'b00;
+   localparam st_send =   2'b01;
+   localparam st_wait =   2'b10; // wait for next digit
    localparam st_finish = 2'b11;
    reg [1:0] state;
    
@@ -115,8 +115,16 @@ module send_uint32_bcd_tx_buf(
                 st_ready:
                     if (data_strobe && !data_strobe_) begin
                        state <= st_wait;
-                       digit_num <= 3'b111;
-                       reg_data <= data;
+                       digit_num <= 4'b1001;
+                       reg_data[15:0] <= { 8'h0A, 8'h0D };
+                       reg_data[(0*8+16) +:8] <= {4'h3, data[(0*4) +:4]};
+                       reg_data[(1*8+16) +:8] <= {4'h3, data[(1*4) +:4]};
+                       reg_data[(2*8+16) +:8] <= {4'h3, data[(2*4) +:4]};
+                       reg_data[(3*8+16) +:8] <= {4'h3, data[(3*4) +:4]};
+                       reg_data[(4*8+16) +:8] <= {4'h3, data[(3*4) +:4]};
+                       reg_data[(5*8+16) +:8] <= {4'h3, data[(5*4) +:4]};
+                       reg_data[(6*8+16) +:8] <= {4'h3, data[(6*4) +:4]};
+                       reg_data[(7*8+16) +:8] <= {4'h3, data[(7*4) +:4]};
                        send_strobe <= 1; // send digit
                     end
                 st_wait: begin
@@ -124,8 +132,8 @@ module send_uint32_bcd_tx_buf(
                     state <= st_send;
                 end
                 st_send:
-                    if (digit_num==3'b000) begin
-                      digit_num <= 3'b111;
+                    if (digit_num==4'b0000) begin
+                      digit_num <= 4'b1001;
                       send_strobe <= 0;
                       state <= st_finish;  // seq finished
                     end else begin
@@ -139,7 +147,7 @@ module send_uint32_bcd_tx_buf(
                 end
             endcase
          end 
-         curr_char <= {4'h3, reg_data[(digit_num * 4) +:4]};
+         curr_char <= reg_data[(digit_num * 8) +:8];
       end
       data_strobe_ <= data_strobe;
    end
