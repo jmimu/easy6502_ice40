@@ -4,7 +4,7 @@
 
 module tb ();
 
-    localparam DURATION = 3000000;
+    localparam DURATION = 30000000;
 
     reg clk12;
     wire led_green;

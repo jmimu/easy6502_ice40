@@ -34,7 +34,11 @@ power_on_reset por(
 
 // slow clock ~2s
 reg [26:0] slowclk_cnt;
-wire slowclk = slowclk_cnt[23];
+`ifdef SIM
+    wire slowclk = slowclk_cnt[15];
+`else
+    wire slowclk = slowclk_cnt[23];
+`endif
 always @(posedge clk)
 begin
   if (reset) begin
@@ -60,13 +64,23 @@ generate
     end 
 endgenerate
 
+wire baud_x1;
+wire [7:0] curr_char;
+wire utx_strobe;
+send_uint32_bcd_tx_buf send_bcd ( .mclk(clk), .reset(reset),
+            .baud_x1(baud_x1),
+            .data( mydata),
+            .data_strobe(slowclk),
+            .curr_char(curr_char),
+            .send_strobe(utx_strobe)
+);
 
 // uart tx
-wire utx_strobe;
-assign utx_strobe = slowclk_cnt[14] & slowclk_cnt[17] & slowclk_cnt[24];
-uart_buffer utx(.clk(clk), .reset(reset),
-                .serial_tx(serial_txd),
-                .data( 8'd65 ), .data_strobe(utx_strobe)
+//wire utx_strobe;
+//assign utx_strobe = slowclk_cnt[14] & slowclk_cnt[17] & slowclk_cnt[24];
+uart_buffer utx_buf(.clk(clk), .reset(reset),
+                .serial_tx(serial_txd), .baud_x1(baud_x1),
+                .data( curr_char ), .data_strobe(utx_strobe)
 );
 
 /*wire baud_x1, baud_x4;
