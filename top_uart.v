@@ -13,6 +13,7 @@ reboot after flash
 module top_uart (
     // inputs
     input wire gpio_20, // 12 MHz clk
+    input wire gpio_21, // pps
     input wire serial_rxd,
     input wire spi_cs,
 
@@ -24,6 +25,15 @@ module top_uart (
 
 );
 wire clk = gpio_20;
+wire pps = gpio_21;
+reg pps_, pps__;
+wire pps_posedge = pps__<pps_;
+reg pps_posedge_; // 1 clock slower to sed data before resetting
+always @(posedge clk) begin
+    pps_ <= pps;
+    pps__ <= pps_;
+    pps_posedge_ <= pps_posedge;
+end
 
 //power on reset
 wire reset;
@@ -32,7 +42,7 @@ power_on_reset por(
   .reset(reset)
 );
 
-// slow clock ~2s
+/*// slow clock ~2s
 reg [26:0] slowclk_cnt;
 `ifdef SIM
     wire slowclk = slowclk_cnt[15];
@@ -47,18 +57,18 @@ begin
     slowclk_cnt <= slowclk_cnt + 27'b1;
   end
 end
-
+*/
 // counter
 wire [31:0] mydata;
 
 wire [7:0] carry;
-bcd_cnt_digit bcd0(.clk(clk), .reset(reset),
-                   .inc(slowclk), .val(mydata[ 0 +:4]), .carry(carry[0])
+bcd_clk_cnt_digit bcd0(.clk(clk), .reset(reset | pps_posedge_),
+                       .val(mydata[ 0 +:4]), .carry(carry[0])
 );
 genvar i;
 generate
     for (i=1; i<8; i=i+1) begin : gen_bcd
-      bcd_cnt_digit bcd (.clk(clk), .reset(reset),
+      bcd_cnt_digit bcd (.clk(clk), .reset(reset | pps_posedge_),
                         .inc(carry[i-1]), .val(mydata[ (i*4) +:4]), .carry(carry[i])
       );
     end 
@@ -70,7 +80,7 @@ wire utx_strobe;
 send_uint32_bcd_tx_buf send_bcd ( .mclk(clk), .reset(reset),
             .baud_x1(baud_x1),
             .data( mydata),
-            .data_strobe(slowclk),
+            .data_strobe(pps_posedge),
             .curr_char(curr_char),
             .send_strobe(utx_strobe)
 );
@@ -97,7 +107,7 @@ uart_tx_uint32_bcd utx ( .mclk(clk), .reset(reset),
 */
 
 // leds
-assign led_green = slowclk;
+assign led_green = pps;
 assign led_red = serial_rxd;
 assign led_blue = 1'b1;
 

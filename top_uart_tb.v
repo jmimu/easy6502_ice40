@@ -7,6 +7,7 @@ module tb ();
     localparam DURATION = 30000000;
 
     reg clk12;
+    reg pps;
     wire led_green;
     wire led_red;
     wire led_blue;
@@ -14,14 +15,20 @@ module tb ();
 
     initial begin
         clk12 = 1'b0;
+        pps = 1'b0;
     end
 
     always begin
         #41 clk12 = !clk12;
     end
+    
+    always begin
+        #10000 pps = !pps;
+    end
 
     top_uart uut(
         .gpio_20(clk12),
+        .gpio_21(pps),
         .serial_txd(serial_txd),
         
         .led_green(led_green),

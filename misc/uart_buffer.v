@@ -110,7 +110,7 @@ module send_uint32_bcd_tx_buf(
          send_strobe <= 0;
          state <= st_ready;
       end else begin
-         if (baud_x1) begin
+         
             case (state)
                 st_ready:
                     if (data_strobe && !data_strobe_) begin
@@ -127,7 +127,7 @@ module send_uint32_bcd_tx_buf(
                        reg_data[(7*8+16) +:8] <= {4'h3, data[(7*4) +:4]};
                        send_strobe <= 1; // send digit
                     end
-                st_wait: begin
+                st_wait: if (baud_x1) begin
                     send_strobe <= 0;
                     state <= st_send;
                 end
@@ -141,12 +141,12 @@ module send_uint32_bcd_tx_buf(
                       send_strobe <= 1; // send digit
                       state <= st_wait;
                     end
-                st_finish: begin
+                st_finish: if (baud_x1) begin
                     send_strobe <= 0;
                     state <= st_ready;
                 end
             endcase
-         end 
+         
          curr_char <= reg_data[(digit_num * 8) +:8];
       end
       data_strobe_ <= data_strobe;

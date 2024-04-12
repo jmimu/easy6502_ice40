@@ -1,3 +1,4 @@
+// inc must be < half clk
 module bcd_cnt_digit(clk, reset, inc, val, carry);
     input        clk, reset, inc;
     output reg [3:0] val;
@@ -22,5 +23,26 @@ module bcd_cnt_digit(clk, reset, inc, val, carry);
         end
         inc_ <= inc;
         inc__ <= inc_;
+    end
+endmodule
+
+// increase each clk
+module bcd_clk_cnt_digit(clk, reset, val, carry);
+    input        clk, reset, inc;
+    output reg [3:0] val;
+    output reg carry;
+    always @(posedge clk) begin
+        if (reset) begin
+            val <= 4'd0;
+            carry = 1'b0;
+        end else begin
+            if (val == 4'd9) begin
+                val <=  4'd0;
+                carry = 1'b1;
+            end else begin
+                val <= val + 4'd1;
+                carry = 1'b0;
+            end
+        end
     end
 endmodule
