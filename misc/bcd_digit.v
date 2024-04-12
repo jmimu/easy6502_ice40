@@ -28,7 +28,7 @@ endmodule
 
 // increase each clk
 module bcd_clk_cnt_digit(clk, reset, val, carry);
-    input        clk, reset, inc;
+    input        clk, reset;
     output reg [3:0] val;
     output reg carry;
     always @(posedge clk) begin

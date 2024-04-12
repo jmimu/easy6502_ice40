@@ -23,7 +23,7 @@ module tb ();
     end
     
     always begin
-        #10000 pps = !pps;
+        #1000000 pps = !pps;
     end
 
     top_uart uut(

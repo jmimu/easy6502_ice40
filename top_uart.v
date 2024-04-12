@@ -4,6 +4,7 @@
 `include "misc/uart_buffer.v"
 `include "misc/strobe2clk.v"
 `include "misc/bcd_digit.v"
+`include "misc/debounce.v"
 
 /*
 ss is naturally pulled high
@@ -26,14 +27,19 @@ module top_uart (
 );
 wire clk = gpio_20;
 wire pps = gpio_21;
-reg pps_, pps__;
-wire pps_posedge = pps__<pps_;
-reg pps_posedge_; // 1 clock slower to sed data before resetting
+
+wire pps_posedge;
+reg pps_posedge_; // 1 clock slower to send data before resetting
+debounce debouce_pps( .clk(clk),
+                      .in(pps),
+                      .out(),
+                      .rising(pps_posedge),
+                      .falling()
+);
 always @(posedge clk) begin
-    pps_ <= pps;
-    pps__ <= pps_;
     pps_posedge_ <= pps_posedge;
 end
+
 
 //power on reset
 wire reset;

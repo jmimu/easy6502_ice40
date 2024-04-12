@@ -132,14 +132,16 @@ module send_uint32_bcd_tx_buf(
                     state <= st_send;
                 end
                 st_send:
-                    if (digit_num==4'b0000) begin
-                      digit_num <= 4'b1001;
-                      send_strobe <= 0;
-                      state <= st_finish;  // seq finished
-                    end else begin
-                      digit_num <= digit_num - 1;
-                      send_strobe <= 1; // send digit
-                      state <= st_wait;
+                    if (baud_x1) begin
+                        if (digit_num==4'b0000) begin
+                          digit_num <= 4'b1001;
+                          send_strobe <= 0;
+                          state <= st_finish;  // seq finished
+                        end else begin
+                          digit_num <= digit_num - 1;
+                          send_strobe <= 1; // send digit
+                          state <= st_wait;
+                        end
                     end
                 st_finish: if (baud_x1) begin
                     send_strobe <= 0;
