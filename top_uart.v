@@ -68,14 +68,17 @@ end
 wire [31:0] mydata;
 
 wire [7:0] carry;
+wire [7:0] reset_delay;
 bcd_clk_cnt_digit bcd0(.clk(clk), .reset(reset | pps_posedge_),
-                       .val(mydata[ 0 +:4]), .carry(carry[0])
+                       .val(mydata[ 0 +:4]), .carry(carry[0]),
+                       .reset_out(reset_delay[0])
 );
 genvar i;
 generate
     for (i=1; i<8; i=i+1) begin : gen_bcd
-      bcd_cnt_digit bcd (.clk(clk), .reset(reset | pps_posedge_),
-                        .inc(carry[i-1]), .val(mydata[ (i*4) +:4]), .carry(carry[i])
+      bcd_cnt_digit bcd (.clk(clk), .reset(reset_delay[i-1]),
+                        .inc(carry[i-1]), .val(mydata[ (i*4) +:4]),
+                        .carry(carry[i]), .reset_out(reset_delay[i])
       );
     end 
 endgenerate
