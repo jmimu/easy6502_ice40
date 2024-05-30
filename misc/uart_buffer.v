@@ -98,11 +98,12 @@ module send_uint32_bcd_tx_buf(
    reg data_strobe_;
 
    // state machine
-   localparam st_ready =  2'b00;
-   localparam st_send =   2'b01;
-   localparam st_wait =   2'b10; // wait for next digit
-   localparam st_finish = 2'b11;
-   reg [1:0] state;
+   localparam st_ready =          3'd0;
+   localparam st_getting =        3'd1;
+   localparam st_sending =        3'd2;
+   localparam st_wait_send =      3'd3; // wait for next digit
+   localparam st_finish =         3'd4;
+   reg [2:0] state;
    
    always @(posedge mclk) begin
       if (reset) begin
@@ -114,24 +115,32 @@ module send_uint32_bcd_tx_buf(
             case (state)
                 st_ready:
                     if (data_strobe && !data_strobe_) begin
-                       state <= st_wait;
-                       digit_num <= 4'b1001;
+                       state <= st_getting;
+                       digit_num <= 4'd0;
                        reg_data[15:0] <= { 8'h0A, 8'h0D };
-                       reg_data[(0*8+16) +:8] <= {4'h0, data[(0*4) +:4]};
-                       reg_data[(1*8+16) +:8] <= {4'h0, data[(1*4) +:4]};
-                       reg_data[(2*8+16) +:8] <= {4'h0, data[(2*4) +:4]};
-                       reg_data[(3*8+16) +:8] <= {4'h0, data[(3*4) +:4]};
-                       reg_data[(4*8+16) +:8] <= {4'h0, data[(3*4) +:4]};
-                       reg_data[(5*8+16) +:8] <= {4'h0, data[(5*4) +:4]};
-                       reg_data[(6*8+16) +:8] <= {4'h0, data[(6*4) +:4]};
-                       reg_data[(7*8+16) +:8] <= {4'h0, data[(7*4) +:4]};
-                       send_strobe <= 1; // send digit
+                       reg_data[(0*8+16) +:8] <= {8'hFF};
+                       reg_data[(1*8+16) +:8] <= {8'hFF};
+                       reg_data[(2*8+16) +:8] <= {8'hFF};
+                       reg_data[(3*8+16) +:8] <= {8'hFF};
+                       reg_data[(4*8+16) +:8] <= {8'hFF};
+                       reg_data[(5*8+16) +:8] <= {8'hFF};
+                       reg_data[(6*8+16) +:8] <= {8'hFF};
+                       reg_data[(7*8+16) +:8] <= {8'hFF};
                     end
-                st_wait: if (baud_x1) begin
+                st_getting:
+                    if (digit_num!==4'd8) begin
+                        reg_data[(digit_num*8+16) +:8] <= {4'h3, data[(digit_num*4) +:4]};
+                        digit_num <= digit_num + 1;
+                    end else begin
+                        state <= st_wait_send;
+                        digit_num <= 4'b1001;
+                        send_strobe <= 1; // send digit
+                    end
+                st_wait_send: if (baud_x1) begin
                     send_strobe <= 0;
-                    state <= st_send;
+                    state <= st_sending;
                 end
-                st_send:
+                st_sending:
                     if (baud_x1) begin
                         if (digit_num==4'b0000) begin
                           digit_num <= 4'b1001;
@@ -140,7 +149,7 @@ module send_uint32_bcd_tx_buf(
                         end else begin
                           digit_num <= digit_num - 1;
                           send_strobe <= 1; // send digit
-                          state <= st_wait;
+                          state <= st_wait_send;
                         end
                     end
                 st_finish: if (baud_x1) begin
