@@ -1,15 +1,17 @@
 module debounce
+#(	
+`ifdef SIM
+	parameter DEBOUNCE_W          =   6
+`else
+	parameter DEBOUNCE_W          =   14
+`endif
+)
 	(	input wire clk,
 		input wire in,
 		output reg out,
 		output wire rising,
 		output wire falling);
-	
-`ifdef SIM
-	parameter DEBOUNCE_W          =   6;
-`else
-	parameter DEBOUNCE_W          =   14;
-`endif
+
 
 	reg [DEBOUNCE_W:0] stab_cnt = 0;
 	

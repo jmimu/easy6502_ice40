@@ -30,7 +30,7 @@ wire pps = gpio_21;
 
 wire pps_posedge;
 reg pps_posedge_; // 1 clock slower to send data before resetting
-debounce debouce_pps( .clk(clk),
+debounce #(.DEBOUNCE_W(1)) debouce_pps( .clk(clk),
                       .in(pps),
                       .out(),
                       .rising(pps_posedge),
