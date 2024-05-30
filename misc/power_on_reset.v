@@ -5,7 +5,7 @@ module power_on_reset(clk, reset);
     //see https://discourse.tinyfpga.com/t/power-on-reset-does-anyone-have-experience/880/2
 	
 `ifdef SIM
-    reg [8:0] reset_cnt = 0;
+    reg [7:0] reset_cnt = 0;
 `else
     reg [23:0] reset_cnt = 0; // 1.4s
 `endif

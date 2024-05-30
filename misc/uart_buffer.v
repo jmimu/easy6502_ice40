@@ -117,14 +117,14 @@ module send_uint32_bcd_tx_buf(
                        state <= st_wait;
                        digit_num <= 4'b1001;
                        reg_data[15:0] <= { 8'h0A, 8'h0D };
-                       reg_data[(0*8+16) +:8] <= {4'h3, data[(0*4) +:4]};
-                       reg_data[(1*8+16) +:8] <= {4'h3, data[(1*4) +:4]};
-                       reg_data[(2*8+16) +:8] <= {4'h3, data[(2*4) +:4]};
-                       reg_data[(3*8+16) +:8] <= {4'h3, data[(3*4) +:4]};
-                       reg_data[(4*8+16) +:8] <= {4'h3, data[(3*4) +:4]};
-                       reg_data[(5*8+16) +:8] <= {4'h3, data[(5*4) +:4]};
-                       reg_data[(6*8+16) +:8] <= {4'h3, data[(6*4) +:4]};
-                       reg_data[(7*8+16) +:8] <= {4'h3, data[(7*4) +:4]};
+                       reg_data[(0*8+16) +:8] <= {4'h0, data[(0*4) +:4]};
+                       reg_data[(1*8+16) +:8] <= {4'h0, data[(1*4) +:4]};
+                       reg_data[(2*8+16) +:8] <= {4'h0, data[(2*4) +:4]};
+                       reg_data[(3*8+16) +:8] <= {4'h0, data[(3*4) +:4]};
+                       reg_data[(4*8+16) +:8] <= {4'h0, data[(3*4) +:4]};
+                       reg_data[(5*8+16) +:8] <= {4'h0, data[(5*4) +:4]};
+                       reg_data[(6*8+16) +:8] <= {4'h0, data[(6*4) +:4]};
+                       reg_data[(7*8+16) +:8] <= {4'h0, data[(7*4) +:4]};
                        send_strobe <= 1; // send digit
                     end
                 st_wait: if (baud_x1) begin
