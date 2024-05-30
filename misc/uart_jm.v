@@ -21,7 +21,11 @@ module uart_clk(mclk, reset, baud_x1, baud_x4);
         prev_x4 <= 0;
      end
      else begin
-        cnt <= cnt + 38;
+  `ifdef SIM
+        cnt <= cnt + 38*10; // fast uart clk for sim
+  `else
+	    cnt <= cnt + 38;
+  `endif
         prev_x1 <= cnt[13];
         prev_x4 <= cnt[11];
      end
