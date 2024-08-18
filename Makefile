@@ -1,4 +1,4 @@
-TOP = top_easy6502
+#TOP = top_easy6502
 TOP = top_uart
 
 top.bin: top.asc
@@ -9,7 +9,7 @@ top.asc: top.json upduino.pcf
 
 .PHONY: top.json
 top.json:
-	yosys -e ".*" -q -p "synth_ice40 -json top.json" ${TOP}.v
+	yosys -e ".*" -q -p "synth_ice40 -json top.json" ${TOP}.v -r ${TOP}
 
 .PHONY: flash
 flash: top.bin

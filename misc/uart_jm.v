@@ -177,15 +177,11 @@ module uart_rx(mclk, reset, baud_x4,
    output [7:0] data;
    output       data_strobe;
 
-   /*
-    * Synchronize the serial input to this clock domain
-    */
+   // Synchronize the serial input to this clock domain
    wire         serial_sync;
    d_flipflop_pair input_dff(mclk, reset, serial, serial_sync);
 
-   /*
-    * State machine: Four clocks per bit, 10 total bits.
-    */
+   // State machine: Four clocks per bit, 10 total bits.
    reg [8:0]    shiftreg;
    reg [5:0]    state;
    reg          data_strobe;
