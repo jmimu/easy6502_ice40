@@ -73,9 +73,10 @@ power_on_reset por(
 
 
 // memory
-wire [10:0] ram_waddr = cpu_ready?cpu_address[10:0]:uart_waddr[10:0];
-wire [10:0] ram_raddr = cpu_ready?cpu_address[10:0]:screen_read_addr;
-wire [7:0] ram_wdata = cpu_ready?cpu_wdata:uart_wdata;
+wire [10:0] ram_waddr = (cpu_ready|cpu_before_ready)?cpu_address[10:0]:uart_waddr[10:0];
+//wire [10:0] ram_raddr = (cpu_ready|cpu_before_ready)?cpu_address[10:0]:screen_read_addr;
+wire [10:0] ram_raddr = cpu_address[10:0];// test: do not disturb ram with screen => not sufficient
+wire [7:0] ram_wdata = (cpu_ready|cpu_before_ready)?cpu_wdata:uart_wdata;
 wire ram_write_en = (cpu_write_en && cpu_ready) || uart_write_en;
 wire [7:0] ram_rdata;// = screen_read_data;
 //assign cpu_rdata = screen_read_data;
@@ -111,19 +112,38 @@ vga_render vga(
 // TODO: still a sync problem...
 // split cpu halt and cpu memory driving to restore ram 1 clock before stopping halt?
 reg cpu_ready = 1'b0;
+reg cpu_before_ready = 1'b0; // to set ram to correct address 1 clock before re-enabling cpu
+reg cpu_sync_old = 1'b0;
+
 always @(posedge CLK_25M)
 begin
+    cpu_sync_old <= cpu_sync;
     if (cpu_reset) begin
         cpu_ready <= 1'b0;
     end else begin
         if (screen_read_en || uart_ask_for_ram)
         begin
+            //if (!(cpu_sync||cpu_sync_old)) begin// wait for new instruction start to stop cpu and let mem to other
+            if (cpu_sync) begin// wait for new instruction start to stop cpu and let mem to other
+                cpu_ready <= 1'b0;
+                cpu_before_ready <= 1'b0;
+            end
+        end else begin
+            if (!cpu_ready) begin
+                if (cpu_before_ready) begin
+                    cpu_before_ready <= 1'b0;
+                    cpu_ready <= 1'b1;
+                end else
+                    cpu_before_ready <= 1'b1;
+            end
+        end
+        /*begin
             if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
                 cpu_ready <= 1'b0;
         end else begin
             if (!cpu_ready)
                 cpu_ready <= 1'b1;
-        end
+        end*/
     end
 
 end
