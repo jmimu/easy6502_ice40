@@ -4,7 +4,7 @@
 
 module tb ();
 
-	localparam DURATION = 30000000;
+	localparam DURATION = 20000000;
 
 	reg clk25, clk12;
 	reg serial_rxd;

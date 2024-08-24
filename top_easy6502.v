@@ -122,21 +122,16 @@ vga_render vga(
 // split cpu halt and cpu memory driving to restore ram 1 clock before stopping halt?
 reg cpu_ready = 1'b0;
 reg cpu_before_ready = 1'b0; // to set ram to correct address 1 clock before re-enabling cpu
-reg cpu_sync_old = 1'b0;
 
 always @(posedge CLK_25M)
 begin
-    cpu_sync_old <= cpu_sync;
     if (cpu_reset) begin
         cpu_ready <= 1'b0;
     end else begin
         if (screen_read_en || uart_ask_for_ram)
         begin
-            //if (!(cpu_sync||cpu_sync_old)) begin// wait for new instruction start to stop cpu and let mem to other
-            if (cpu_sync) begin// wait for new instruction start to stop cpu and let mem to other
-                cpu_ready <= 1'b0;
-                cpu_before_ready <= 1'b0;
-            end
+            cpu_ready <= 1'b0;
+            cpu_before_ready <= 1'b0;
         end else begin
             if (!cpu_ready) begin
                 if (cpu_before_ready) begin
@@ -146,15 +141,7 @@ begin
                     cpu_before_ready <= 1'b1;
             end
         end
-        /*begin
-            if (cpu_sync) // wait for new instruction start to stop cpu and let mem to other
-                cpu_ready <= 1'b0;
-        end else begin
-            if (!cpu_ready)
-                cpu_ready <= 1'b1;
-        end*/
     end
-
 end
 
 wire cpu_sync;
