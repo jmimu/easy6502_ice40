@@ -47,9 +47,9 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
     end else begin
       if (hpos==10'd81) begin
         ask_for_ram <= !in_border_v; //ask for ram one pixel before drawing to let CPU finish current instruction
-      end else if (hpos==10'd95) begin
+      end else if (hpos==10'd98) begin
         in_border_h <= 1'b0;
-      end else if (hpos==10'd543) begin
+      end else if (hpos==10'd546) begin
         in_border_h <= 1'b1;
         ask_for_ram <= 1'b0;
       end
@@ -62,9 +62,9 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
     if (reset) begin
       in_border_v <= 1'b1;
     end else begin
-      if (vpos==10'd15) begin
+      if (vpos==10'd16) begin
         in_border_v <= 1'b0;
-      end else if (vpos==10'd463) begin
+      end else if (vpos==10'd464) begin
         in_border_v <= 1'b1;
       end
     end

@@ -16,7 +16,8 @@ Easy 6502
 
 https://skilldrick.github.io/easy6502/
 
-6502 CPU from https://github.com/Arlet/verilog-6502.git
+get the 6502 CPU:
+git clone  https://github.com/Arlet/verilog-6502.git
 
 Easy 6502 memory :
 ```
@@ -51,6 +52,13 @@ JMP $0600
 ```
 78 d8 a2 ff 9a 58 4c 00 06
 ```
+
+Upload a program
+================
+
+Send hex (no spaces) on serial at 115200.
+Upduino has to be unplugged/replugged after bitstream update for serial port to be accessible.
+
 
 Program
 =======

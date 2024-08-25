@@ -7,8 +7,7 @@ top.bin: top.asc
 top.asc: top.json upduino.pcf
 	nextpnr-ice40 --up5k --package sg48 --json top.json --pcf upduino.pcf --asc top.asc   # run place and route
 
-.PHONY: top.json
-top.json:
+top.json: $(wildcard *.v) $(wildcard */*.v) $(wildcard *.mem)
 	yosys -e ".*" -q -p "synth_ice40 -json top.json" ${TOP}.v -r ${TOP}
 
 .PHONY: flash

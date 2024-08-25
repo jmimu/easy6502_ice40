@@ -118,8 +118,6 @@ vga_render vga(
     .screen_read_data(ram_rdata)
 );
 
-// TODO: still a sync problem...
-// split cpu halt and cpu memory driving to restore ram 1 clock before stopping halt?
 reg cpu_ready = 1'b0;
 reg cpu_before_ready = 1'b0; // to set ram to correct address 1 clock before re-enabling cpu
 
