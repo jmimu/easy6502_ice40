@@ -56,12 +56,13 @@ JMP $0600
 Upload a program
 ================
 
-Send hex (no spaces) on serial at 115200.
+Send binary dump on serial at 115200 bauds.
 Upduino has to be unplugged/replugged after bitstream update for serial port to be accessible.
+Blue led blinks with a frequency corresponding to the last byte received.
 
 
-Program
-=======
+Programs
+========
 
 simplest :
 ```
@@ -73,6 +74,8 @@ JMP $0600
 a9 02 8d 04 02 4c 00 06
 ```
 
+
+draws 3 pixels 3, 5, 8 and loops
 ```
 LDA #$03
 STA $0221
@@ -82,11 +85,26 @@ LDA #$07
 STA $0223
 JMP $0600
 ```
+
+
+draws 256 pixels and loops with color shift
 ```
-00 01 02 03 04 05 06 07 08 09 0A 0B 0C 0D 0E 0F 10 11
-a9 03 8d 21 02 a9 05 8d 22 02 a9 07 8d 23 02 4c 00 06
+  LDX #$00
+  LDY #$00
+loop:
+  TYA
+  STA $0200,X
+  INX
+  INY
+  CPY #$20
+  BNE next
+  INY ; colorshift
+next:
+  JMP loop
 ```
-draws 3 pixels 3, 5, 8 and loops
+```
+a2 00 a0 00 98 9d 00 02 e8 c8 c0 20 d0 01 c8 4c 04 06 
+```
 
 -------------------
 ```
