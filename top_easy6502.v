@@ -48,7 +48,7 @@ wire CLK_12M = gpio_20;
 
 `ifndef SIM
 wire CLK_25M;
-// 25 MHz
+// 25.125 MHz
 SB_PLL40_CORE #(
     .FEEDBACK_PATH("SIMPLE"),
     .PLLOUT_SELECT("GENCLK"),

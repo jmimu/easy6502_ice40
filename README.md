@@ -1,23 +1,37 @@
+upduino to pico pi demo
+=======================
+
+
 Initial setup
 =============
 ```
 sudo cp upduinov3.rules /etc/udev/rules.d/
 ```
 
-upduino to pico pi demo
-=======================
+Dependancies
+------------
+
+Get the 6502 CPU:
+
+    git clone https://github.com/Arlet/verilog-6502.git
+
+Get Ophis 6502 assembler:
+
+    pip3 install ophis-asm
+    
+Get pyserial:
+
+    pip3 install pyserial
+
 
 VGA base from 8bitworkshop.com
 https://upduino.readthedocs.io
 
 
-Easy 6502
-=========
+Easy 6502 arch
+==============
 
 https://skilldrick.github.io/easy6502/
-
-get the 6502 CPU:
-git clone  https://github.com/Arlet/verilog-6502.git
 
 Easy 6502 memory :
 ```
@@ -30,15 +44,11 @@ $0600 - $06ff  Program ROM
 VGA 13h default palette:
 https://commons.wikimedia.org/wiki/User:Psychonaut/ipalette.sh
 
-
-6502
-====
-
 Internals of BRK/IRQ/NMI/RESET on a MOS 6502 https://www.pagetable.com/?p=410
 
 
 Startup
-=======
+-------
 
 ```
 SEI ;disable interrupts (set interrupt disable flag)
@@ -53,6 +63,12 @@ JMP $0600
 78 d8 a2 ff 9a 58 4c 00 06
 ```
 
+Automatic Assemble & Upload
+===========================
+
+    python asm2uart.py examples/inx.asm /dev/ttyUSB0
+
+
 Upload a program
 ================
 
@@ -61,97 +77,19 @@ Upduino has to be unplugged/replugged after bitstream update for serial port to 
 Blue led blinks with a frequency corresponding to the last byte received.
 
 
-Programs
+Assemble
 ========
 
-simplest :
-```
-LDA #$02
-STA $0204
-JMP $0600
-```
-```
-a9 02 8d 04 02 4c 00 06
-```
+Using Ophis 6502 assembler (https://michaelcmartin.github.io/Ophis/).
+
+Source example:
+
+    .org  $0600
+    .outfile "out.prg"
+
+	    ldx #0
+    loop:
+	    inx
+	    jmp loop
 
 
-draws 3 pixels 3, 5, 8 and loops
-```
-LDA #$03
-STA $0221
-LDA #$05
-STA $0222
-LDA #$07
-STA $0223
-JMP $0600
-```
-
-
-draws 256 pixels and loops with color shift
-```
-  LDX #$00
-  LDY #$00
-loop:
-  TYA
-  STA $0200,X
-  INX
-  INY
-  CPY #$20
-  BNE next
-  INY ; colorshift
-next:
-  JMP loop
-```
-```
-a2 00 a0 00 98 9d 00 02 e8 c8 c0 20 d0 01 c8 4c 04 06 
-```
-
--------------------
-```
-LDA #$00
-LDX #$00
-LDY #$00
-
-loop:
-ADC #$01
-STA $0222
-slow1:
-slow2:
-INY
-CPY #$00
-BNE slow2
-INY ; dephase
-INY
-INY
-INX
-CPX #$00
-BNE slow1
-INX  ; dephase
-INX
-JMP loop
-```
-```
-a9 00 a2 00 a0 00 69 01 8d 22 02 c8 c0 00 d0 fb c8 c8 c8 e8 e0 00 d0 f3 e8 e8 4c 06 06
-```
-
-Address  Hexdump   Dissassembly
--------------------------------
-```
-$0600    a9 00     LDA #$00
-$0602    a2 00     LDX #$00
-$0604    a0 00     LDY #$00
-$0606    69 01     ADC #$01
-$0608    8d 22 02  STA $0222
-$060b    c8        INY 
-$060c    c0 00     CPY #$00
-$060e    d0 fb     BNE $060b
-$0610    c8        INY 
-$0611    c8        INY 
-$0612    c8        INY 
-$0613    e8        INX 
-$0614    e0 00     CPX #$00
-$0616    d0 f3     BNE $060b
-$0618    e8        INX 
-$0619    e8        INX 
-$061a    4c 06 06  JMP $0606
-```
