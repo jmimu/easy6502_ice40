@@ -33,7 +33,7 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
   //pixel 32x32
   reg [4:0] pixx = 5'b0;
   reg [4:0] pixy = 5'b0;
-  // sub pixel 0-13
+  // sub pixel 0-10
   reg [3:0] subx = 4'b0;
   reg [3:0] suby = 4'b0;
   
@@ -45,11 +45,11 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
       in_border_h <= 1'b1;
       ask_for_ram <= 1'b0;
     end else begin
-      if (hpos==10'd81) begin
+      if (hpos==10'd130) begin
         ask_for_ram <= !in_border_v; //ask for ram one pixel before drawing to let CPU finish current instruction
-      end else if (hpos==10'd97) begin
+      end else if (hpos==10'd144) begin
         in_border_h <= 1'b0;
-      end else if (hpos==10'd545) begin
+      end else if (hpos==10'd496) begin
         in_border_h <= 1'b1;
         ask_for_ram <= 1'b0;
       end
@@ -76,10 +76,10 @@ module vga_render(clk, reset, hsync, vsync, rgb, screen_read_en, screen_read_add
       pixx <= 5'b0;
       subx <= 5'b0;
     end else begin
-      if (hpos==10'd95) begin
+      if (hpos==10'd142) begin
         pixx <= 5'b0;
         subx <= 5'b0;
-      end else if (subx==4'd13) begin
+      end else if (subx==4'd10) begin
         pixx <= pixx + 5'b1;
         subx <= 5'b0;
       end else
