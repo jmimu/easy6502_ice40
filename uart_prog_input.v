@@ -10,7 +10,7 @@ module uart_prog_input(clk_ram, reset, serial_rxd, waddr, wdata, write_en, ask_f
 input clk_ram;
 input reset;
 input serial_rxd;
-output reg [15:0] waddr;
+output [15:0] waddr;
 output reg [7:0] wdata;
 output reg write_en;
 output reg ask_for_ram; //will suspend cpu
@@ -48,26 +48,38 @@ val2freq val2freq1(
 
 reg [15:0] wait_for_next_byte; // when 8, stop ask_for_ram, reset cpu
 
+reg [10:0] clear_byte_addr; // clear ram 600 to 0 when waiting
+
+reg [15:0] prog_byte_addr; // where to write the new byte of program
+assign waddr = rx_data_strobe ? prog_byte_addr : clear_byte_addr;
+
 always @(posedge clk_ram)
   begin
     if (reset) begin
       wait_for_next_byte <= 0;
-      waddr <= 16'h05ff;
+      prog_byte_addr <= 16'h05ff;
       wdata <= 8'b0;
       write_en  <= 1'b0;
       ask_for_ram <= 1'b0;
       end_of_data <= 1'b0;
+      clear_byte_addr <= 11'h000; // nothing to clear
     end else begin
       if (serial_rxd == 1'b0) begin
         ask_for_ram <= 1'b1; //ask ram on start bit
+        if (ask_for_ram == 1'b0)
+            clear_byte_addr <= 11'h600-5; // ready to clear screen and pages 1-2
       end else  if (rx_data_strobe) begin
         ask_for_ram <= 1'b1;
         end_of_data <= 1'b0;
         wait_for_next_byte <= -1;
-        waddr <= waddr + 1; 
+        prog_byte_addr <= prog_byte_addr + 1;
         wdata <= rx_data; //write this byte in ram
         write_en  <= 1'b1;
       end else begin
+        if (clear_byte_addr != 11'h000) begin
+            clear_byte_addr <= clear_byte_addr - 1;
+            wdata <= 8'b0;
+        end
         if (wait_for_next_byte != 0) begin
           wait_for_next_byte <= wait_for_next_byte - 1;
           write_en  <= 1'b0;
@@ -76,7 +88,7 @@ always @(posedge clk_ram)
             end_of_data <= 1'b1;
           end else if (wait_for_next_byte == 15'd1) begin //end of reset cpu
             end_of_data <= 1'b0;
-            waddr <= 16'h05ff; //restart writing address
+            prog_byte_addr <= 16'h05ff; //restart writing address
           end
         end
         
