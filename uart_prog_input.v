@@ -51,7 +51,9 @@ reg [15:0] wait_for_next_byte; // when 8, stop ask_for_ram, reset cpu
 reg [10:0] clear_byte_addr; // clear ram 600 to 0 when waiting
 
 reg [15:0] prog_byte_addr; // where to write the new byte of program
-assign waddr = rx_data_strobe ? prog_byte_addr : clear_byte_addr;
+assign waddr = rx_data_strobe_1 ? prog_byte_addr : clear_byte_addr;
+
+reg rx_data_strobe_1;
 
 always @(posedge clk_ram)
   begin
@@ -63,8 +65,12 @@ always @(posedge clk_ram)
       ask_for_ram <= 1'b0;
       end_of_data <= 1'b0;
       clear_byte_addr <= 11'h000; // nothing to clear
+      rx_data_strobe_1 <= 1'b0;
     end else begin
+      rx_data_strobe_1 <= rx_data_strobe;
       if (serial_rxd == 1'b0) begin
+        write_en  <= 1'b1;
+        wdata <= 8'b0;
         ask_for_ram <= 1'b1; //ask ram on start bit
         if (ask_for_ram == 1'b0)
             clear_byte_addr <= 11'h600-5; // ready to clear screen and pages 1-2
@@ -82,13 +88,13 @@ always @(posedge clk_ram)
         end
         if (wait_for_next_byte != 0) begin
           wait_for_next_byte <= wait_for_next_byte - 1;
-          write_en  <= 1'b0;
           if (wait_for_next_byte == 15'd160) begin //transmission is stopped, reset cpu => has to reset when cpu is not halted by screen, and should stop reset when not halted by screen too. TODO: improve
             ask_for_ram <= 1'b0;
             end_of_data <= 1'b1;
           end else if (wait_for_next_byte == 15'd1) begin //end of reset cpu
             end_of_data <= 1'b0;
             prog_byte_addr <= 16'h05ff; //restart writing address
+            write_en  <= 1'b0;
           end
         end
         
