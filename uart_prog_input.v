@@ -73,7 +73,7 @@ always @(posedge clk_ram)
         wdata <= 8'b0;
         ask_for_ram <= 1'b1; //ask ram on start bit
         if (ask_for_ram == 1'b0)
-            clear_byte_addr <= 11'h600-5; // ready to clear screen and pages 1-2
+            clear_byte_addr <= 11'h5FF; // ready to clear screen and pages 1-2
       end else  if (rx_data_strobe) begin
         ask_for_ram <= 1'b1;
         end_of_data <= 1'b0;
