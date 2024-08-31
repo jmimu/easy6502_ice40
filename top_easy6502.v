@@ -31,8 +31,8 @@ module top_easy6502 (
     output wire gpio_38,
     output wire gpio_42,
 
-    output wire gpio_46, //vga sync
-    output wire gpio_2, //vga sync
+    output wire gpio_46, //vga vsync
+    output wire gpio_2,  //vga hsync
 
     output wire led_green,
     output wire led_red,
@@ -45,6 +45,10 @@ module top_easy6502 (
 );
 
 wire CLK_12M = gpio_20;
+wire vsync = gpio_46;
+wire hsync = gpio_2;
+
+
 
 `ifndef SIM
 wire CLK_25M;
@@ -108,8 +112,8 @@ wire [10:0] screen_read_addr;
 vga_render vga(
     .clk(CLK_25M),
     .reset(reset),
-    .hsync(gpio_2),
-    .vsync(gpio_46),
+    .hsync(hsync),
+    .vsync(vsync),
     .rgb( { gpio_32, gpio_27, gpio_26, gpio_25, gpio_23,
             gpio_36, gpio_43, gpio_34, gpio_37, gpio_31,
             gpio_21, gpio_12, gpio_28, gpio_38, gpio_42 } ),
@@ -158,7 +162,7 @@ cpu cpu1(
     .DO(cpu_wdata),                // data bus output 
     .WE(cpu_write_en),                          // write enable
     .IRQ(1'b0),                          // interrupt request
-    .NMI(1'b0),                          // non-maskable interrupt request
+    .NMI(vsync),                          // non-maskable interrupt request
     .RDY( cpu_ready ),      // Ready signal. Pauses CPU when RDY=0
     .SYNC(cpu_sync)            // is starting a new instruction
  );
