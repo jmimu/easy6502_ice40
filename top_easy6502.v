@@ -125,14 +125,12 @@ vga_render vga(
 reg cpu_ready = 1'b0;
 reg cpu_before_ready = 1'b0; // to set ram to correct address 1 clock before re-enabling cpu
 
-wire slow_cpu = !gpio_46; // make cpu very slow: work only during vsync
-
 always @(posedge CLK_25M)
 begin
     if (cpu_reset) begin
         cpu_ready <= 1'b0;
     end else begin
-        if (screen_read_en || uart_ask_for_ram || slow_cpu)
+        if (screen_read_en || uart_ask_for_ram)
         begin
             cpu_ready <= 1'b0;
             cpu_before_ready <= 1'b0;

@@ -9,17 +9,23 @@ loop:
     TYA
     STA $0200,X
     INX
+    
+    jsr waitframe
+    
     INY
     CPY #$20
     BNE +
     INY ; colorshift
 *
-
+    JMP loop
+    
 waitframe:
+    ;php  ;pb??
+    ;pha  ;pb??
     lda frame
     cmp oldframe
-    bne waitframe
+    beq waitframe
     sta oldframe
-
-
-    JMP loop
+    ;pla
+    ;plp
+    rts
