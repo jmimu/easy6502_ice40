@@ -1,5 +1,5 @@
-.alias oldframe $00fc
-.alias frame $00fd
+.alias oldframe $fc
+.alias frame $fd
 
 .org  $0600
 

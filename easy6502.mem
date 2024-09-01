@@ -73,14 +73,14 @@ a0 10 a2 00 18 a9 00 69 00 69 00 69 00 69 00 69 00 69 00 69 01 90 f0 98 9d 41 02
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00 00
 
-// FFE0 - FFEF reset routine
-78 d8 a2 ff 9a 58 4c 00 06 00 00 00 00 00 00 00 
+// FFE0 - FFE9 reset routine|
+78 d8 a2 ff 9a 58 4c 00 06 00
 
-// FFF0 - FFF9 NMI routine
-E6 FD 40 00 00 00 00 00 00 00 
+// FFEA - FFF9 NMI routine                    |
+08 48 a5 fd e6 fd a5 fd 68 28 40 00 00 00 00 00 
 
 // FFFA-FFFB NMI vector
-00 00
+EA FF
 
 // FFFC-FFFD reset vector
 E0 FF
