@@ -1,0 +1,61 @@
+[*]
+[*] GTKWave Analyzer v3.3.104 (w)1999-2020 BSI
+[*] Thu Aug 29 19:17:34 2024
+[*]
+[dumpfile] "/data/prog/upduino_jm/tb.vcd"
+[dumpfile_mtime] "Thu Aug 29 19:17:34 2024"
+[dumpfile_size] 40820736
+[savefile] "/data/prog/upduino_jm/easy6502.gtkw"
+[timestart] 107918500
+[size] 1316 1350
+[pos] -640 -1
+*-17.000000 2880027600 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1 -1
+[treeopen] tb.
+[treeopen] tb.uut.
+[treeopen] tb.uut.cpu1.
+[treeopen] tb.uut.uart_prog_input1.
+[sst_width] 252
+[signals_width] 183
+[sst_expanded] 1
+[sst_vpaned_height] 402
+@22
+tb.uut.cpu_wdata[7:0]
+tb.uut.cpu_address[15:0]
+tb.uut.cpu1.PC[15:0]
+@28
+tb.uut.cpu_ready
+tb.uut.cpu_before_ready
+@22
+tb.uut.ram_rdata[7:0]
+@28
+tb.uut.cpu_sync
+@22
+tb.uut.cpu1.Y[7:0]
+@8022
+tb.uut.cpu1.Y[7:0]
+@28
+tb.uut.vga.display_on
+tb.uut.vga.in_border_h
+tb.uut.vga.in_border_v
+tb.uut.uart_end_of_data
+tb.uut.cpu_reset
+@22
+tb.uut.cpu1.state[5:0]
+@28
+tb.serial_rxd
+tb.uut.uart_prog_input1.rx_data_strobe
+@22
+tb.uut.uart_prog_input1.rx_data[7:0]
+@28
+tb.uut.uart_prog_input1.baud_x1
+tb.uut.uart_prog_input1.write_en
+@22
+tb.uut.uart_prog_input1.wdata[7:0]
+tb.uut.uart_prog_input1.waddr[15:0]
+tb.uut.ram_system.din[7:0]
+@28
+tb.uut.ram_system.write_en
+@23
+tb.uut.ram_system.waddr[10:0]
+[pattern_trace] 1
+[pattern_trace] 0
