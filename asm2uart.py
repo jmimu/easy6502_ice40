@@ -18,6 +18,8 @@ print("Assemble "+name+"...")
 
 subprocess.run(["ophis", name], check=True)
 
+print("Assembled in "+outname)
+
 print(f"upload binary file {outname} to {tty}...")
 
 ser = serial.Serial(tty, 115200, timeout=0.5)

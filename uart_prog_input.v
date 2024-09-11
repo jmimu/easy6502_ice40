@@ -30,11 +30,18 @@ uart_clk uart_clk1(
 wire [7:0] rx_data;
 wire rx_data_strobe;
 
+reg serial_rxd1, serial_rxd2;
+always @(posedge clk_ram)
+begin
+  serial_rxd1 <= serial_rxd;
+  serial_rxd2   <= serial_rxd1;
+end
+
 uart_rx uart_rx1(
   .mclk(clk_ram),
   .reset(reset),
   .baud_x4(baud_x4),
-  .serial(serial_rxd),
+  .serial(serial_rxd2),
   .data(rx_data),
   .data_strobe(rx_data_strobe)
 );
@@ -68,7 +75,7 @@ always @(posedge clk_ram)
       rx_data_strobe_1 <= 1'b0;
     end else begin
       rx_data_strobe_1 <= rx_data_strobe;
-      if (serial_rxd == 1'b0) begin
+      if (serial_rxd2 == 1'b0) begin
         write_en  <= 1'b1;
         wdata <= 8'b0;
         ask_for_ram <= 1'b1; //ask ram on start bit
