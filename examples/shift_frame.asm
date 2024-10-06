@@ -20,11 +20,12 @@ loop:
     JMP loop
     
 waitframe:
-    php  ;pb??
-    pha  ;pb??
+    php
+    pha
+waitframe_loop:
     lda frame
     cmp oldframe
-    beq waitframe
+    beq waitframe_loop
     sta oldframe
     pla
     plp

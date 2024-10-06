@@ -23,6 +23,12 @@ Get pyserial:
 
     pip3 install pyserial
 
+To install it in a virtual env:
+
+    python3 -m venv env6502
+    . ./env6502/bin/activate
+    pip3 install ophis-asm pyserial
+    deactivate
 
 VGA base from 8bitworkshop.com
 https://upduino.readthedocs.io
@@ -89,6 +95,13 @@ Automatic Assemble & Upload
 
     python asm2uart.py examples/inx.asm /dev/ttyUSB0
 
+In a virtual env:
+
+    . ./env6502/bin/activate
+
+    python asm2uart.py examples/inx.asm /dev/ttyUSB0
+
+    deactivate
 
 Upload a program
 ================
