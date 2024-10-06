@@ -26,17 +26,19 @@ l3: ; draw pix
 
     JMP l2
 
-
-;---------------------------- not working!
+;-------------------------------------
 
 .alias oldframe $fc
 .alias frame $fd
 waitframe:
+    php
     pha
+waitframe_loop:
     lda frame
     cmp oldframe
-    beq waitframe
+    beq waitframe_loop
     sta oldframe
     pla
+    plp
     rts
 
