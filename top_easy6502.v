@@ -3,6 +3,7 @@
 `include "uart_prog_input.v"
 `include "misc/rams.v"
 `include "misc/power_on_reset.v"
+`include "misc/snespad.v"
 `include "verilog-6502/cpu.v"
 `include "verilog-6502/ALU.v"
 
@@ -33,6 +34,10 @@ module top_easy6502 (
 
     output wire gpio_46, //vga vsync
     output wire gpio_2,  //vga hsync
+        
+    output wire gpio_13, //pad1 clock def high
+    output wire gpio_19, //pad1 latch def low
+    input wire gpio_6, //pad1 data
 
     output wire led_green,
     output wire led_red,
@@ -184,9 +189,32 @@ uart_prog_input uart_prog_input1(
     .debug_pin(led_blue)
 );
 
+wire [11:0] pad1;
+
+// snes pad
+snespad snespad1(
+	.clk(CLK_25M),
+	.new_frame(vsync),
+	.pad_clock_pin(gpio_13), //pad clock def high
+	.pad_latch_pin(gpio_19), //pad latch def low
+	.pad_data_pin(gpio_6), //pad data
+	
+	.btn_left(pad1[0]),
+	.btn_right(pad1[1]),
+	.btn_up(pad1[2]),
+	.btn_down(pad1[3]),
+	.btn_a(pad1[4]),
+	.btn_b(pad1[5]),
+	.btn_x(pad1[6]),
+	.btn_y(pad1[7]),
+	.btn_l(pad1[8]),
+	.btn_r(pad1[9]),
+	.btn_st(pad1[10]),
+	.btn_sl(pad1[11])
+);
+
 
 assign led_green = ~uart_ask_for_ram;
-assign led_red = ~uart_end_of_data;
-//assign led_blue = 1'b1;
+assign led_red =  ~pad1[4];
 
 endmodule

@@ -1,22 +1,22 @@
 module snespad (
 	input clk,
 	input new_frame,
-	output pad_clock_pin, //pad clock def high
-	output pad_latch_pin, //pad latch def low
+	output reg pad_clock_pin, //pad clock def high
+	output reg pad_latch_pin, //pad latch def low
 	input pad_data_pin, //pad data
 	
-	output btn_left,
-	output btn_right,
-	output btn_up,
-	output btn_down,
-	output btn_a,
-	output btn_b,
-	output btn_x,
-	output btn_y,
-	output btn_l,
-	output btn_r,
-	output btn_st,
-	output btn_sl
+	output reg btn_left,
+	output reg btn_right,
+	output reg btn_up,
+	output reg btn_down,
+	output reg btn_a,
+	output reg btn_b,
+	output reg btn_x,
+	output reg btn_y,
+	output reg btn_l,
+	output reg btn_r,
+	output reg btn_st,
+	output reg btn_sl
 );
 
 	localparam  // pad reading states
@@ -25,14 +25,10 @@ module snespad (
 		pad_before_read = 2,
 		pad_read =  3,
 		pad_after_read =  4;
-	reg pad_clock_pin;
-	reg pad_latch_pin;
-	wire pad_data_pin;
 	reg [15:0] pad_slow_clk;
 	reg [3:0] pad_state;
 	reg [3:0] pad_state_wait;//in slow clocks
 	reg [5:0] pad_btn_cnt;
-	reg btn_left, btn_right, btn_up, btn_down, btn_a, btn_b, btn_x, btn_y, btn_l, btn_r, btn_st, btn_sl;
 	initial begin
 		btn_left <= 0;
 		btn_right <= 0;
