@@ -80,15 +80,19 @@ power_on_reset por(
   .reset(reset)
 );
 
+// peripherals
+wire [15:0] periph_waddr = 16'd10;
+wire [7:0] periph_wdata = pad1[7:0];
+
+
 
 // memory
-wire [10:0] ram_waddr = (cpu_ready|cpu_before_ready)?cpu_address[10:0]:uart_waddr[10:0];
+wire [10:0] ram_waddr = (cpu_ready|cpu_before_ready)?cpu_address[10:0]:(uart_write_en?uart_waddr[10:0]:periph_waddr[10:0]);
 wire [10:0] ram_raddr = (cpu_ready)?cpu_address[10:0]:(cpu_before_ready?cpu_address_last:screen_read_addr);
-//wire [10:0] ram_raddr = cpu_address[10:0];// test: do not disturb ram with screen => not sufficient
-wire [7:0] ram_wdata = (cpu_ready|cpu_before_ready)?cpu_wdata:uart_wdata;
+wire [7:0] ram_wdata = (cpu_ready|cpu_before_ready)?cpu_wdata:(uart_write_en?uart_wdata:periph_wdata);
 wire ram_write_en = (cpu_write_en && cpu_ready) || uart_write_en;
-wire [7:0] ram_rdata;// = screen_read_data;
-//assign cpu_rdata = screen_read_data;
+
+wire [7:0] ram_rdata;
 
 // to restore ram_rdata during cpu_before_ready
 reg [10:0] cpu_address_last;

@@ -1,13 +1,13 @@
 `timescale 1ns/10ps
 
-`include "top_21.47727MHz.v"
+`include "top_21_47727MHz.v"
 
 module tb ();
 
-    localparam DURATION = 30000000;
+    localparam DURATION = 3000000;
 
     reg clk12;
-    reg clk_96;
+    reg clk_100;
     reg pps;
     wire led_green;
     wire led_red;
@@ -16,7 +16,7 @@ module tb ();
 
     initial begin
         clk12 = 1'b0;
-        clk_96 = 1'b0;
+        clk_100 = 1'b0;
         pps = 1'b0;
     end
 
@@ -25,7 +25,7 @@ module tb ();
     end
 
     always begin
-        #5 clk_96 = !clk_96;
+        #5 clk_100 = !clk_100;
     end
     
     always begin
@@ -34,12 +34,12 @@ module tb ();
 
     top_21_47727MHz uut(
         .gpio_20(clk12),
-        .gpio_26(out),
+        .gpio_18(out),
 
         .led_green(led_green),
         .led_red(led_red),
         .led_blue(led_blue),
-        .clk_96(clk_96)
+        .clk_hi(clk_100)
     );
 
     initial begin
