@@ -10,14 +10,16 @@ module top_21_47727MHz (
     output wire led_green,
     output wire led_red,
     output wire led_blue,
-    output wire gpio_18, // i2s lrclk // output at 27.47727MHz
+    output wire gpio_18, // i2s lrclk // output ntsc at 21.47727MHz
+    output wire gpio_11, // output pal at 26.601712MHz
 
 `ifdef SIM
 	input wire clk_hi
 `endif
 );
 wire clk_12 = gpio_20;
-wire out = gpio_18;
+wire out_ntsc = gpio_18;
+wire out_pal = gpio_11;
 
 
 `ifndef SIM
@@ -38,18 +40,26 @@ SB_PLL40_CORE #(
 `endif
 
 
-reg [22:0] clockdivide_counter = 23'd0;
+reg [22:0] clockdivide_counter_ntsc = 23'd0;
+reg [22:0] clockdivide_counter_pal = 23'd0;
 
 
 always @(posedge clk_hi)
 begin
-    clockdivide_counter <= clockdivide_counter + 23'd57745;
+    clockdivide_counter_ntsc <= clockdivide_counter_ntsc + 23'd57745;
+    clockdivide_counter_pal <= clockdivide_counter_pal + 23'd2235;
 end
 
 /*
 d=21.47727
 for i in range(25):
-   print(2**i/(96/d))
+   print(i, 2**i/(97.5/d))
+
+d=26.601712
+for i in range(25):
+   print(i, 2**i/(97.5/d))
+
+
 */
 //97.5/ (2**18/57745) = 21.477270126
 
@@ -60,10 +70,11 @@ power_on_reset por(
   .reset(reset)
 );
 
-assign out = clockdivide_counter[17];
+assign out_ntsc = clockdivide_counter_ntsc[17];
+assign out_pal = clockdivide_counter_pal[12];
 
 // leds
-assign led_green = out;
+assign led_green = out_ntsc;
 assign led_red = 1'b1;
 assign led_blue = 1'b1;
 
